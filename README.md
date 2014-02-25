@@ -1,7 +1,7 @@
 
-#JMX Configuration Notes#
+#JMX Configuration Notes
 
-##Default JSR160 Configuration##
+##Default JSR160 Configuration
 
 ```sh
 JAVA_OPTS=$JAVA_OPTS" -Dcom.sun.management.jmxremote"
@@ -18,7 +18,7 @@ $JAVA_HOME/jre/lib/management/jmxremote.password
 $JAVA_HOME/jre/lib/management/jmxremote.access
 ```
 
-##FOR JBOSS 5.1## 
+##FOR JBOSS 5.1
 
 STANDARD JMX can be used to get JBOSS metrics, but unfortunately JVM metrics can't be gotten
 (Interesting information : http://labs.consol.de/blog/jmx4perl/jboss-remote-jmx/)
@@ -40,7 +40,7 @@ STANDARD JMX can be used to get JBOSS metrics, but unfortunately JVM metrics can
     </server>
 ```
 
-##For JBOSS <7.x  & >=6##
+##For JBOSS <7.x  & >=6
 
 ```sh
 JAVA_OPTS=$JAVA_OPTS" -Dcom.sun.management.jmxremote"
@@ -54,7 +54,7 @@ JAVA_OPTS=$JAVA_OPTS" -Dcom.sun.management.jmxremote.ssl=false"
 TAKE CARE, to avoid error messages (ignored by processing), add jboss client jars to classpath
 
 
-##For Jetty##
+##For Jetty
 Use standard JSR 160 jmxrmi connection, but jetty mbeans must be enabled as by
 adding such block in jetty.xml configuration file, and setting all "StatsOn" to true : 
  
@@ -76,7 +76,7 @@ adding such block in jetty.xml configuration file, and setting all "StatsOn" to 
 works at least for jetty 6.1.x. jetty-management.jar must be added to the classpath if not already present.
 
 
-##For JBOSS 7.x##
+##For JBOSS 7.x
 
 jboss-client.jar must be added to the classpath
 
