@@ -1,0 +1,8 @@
+#!/bin/sh
+exec java -jar jajmx.jar "$0" "$@"
+!#
+
+jajmx.JMX.once() { jmx =>
+  jmx.verbosegc() 
+  jmx.gcforce()
+}

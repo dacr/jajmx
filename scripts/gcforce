@@ -1,0 +1,17 @@
+#!/bin/sh
+exec java -verbosegc -jar jajmx.jar "$0" "$@"
+!#
+
+if (args.size < 2) {
+  println("Usage   : jmxgrep host port")
+  println("  args are not compliant so now let's connecting to myself, and force a gc...") 
+}
+
+import fr.janalyse.jmx._
+
+val options = args.toList match {
+  case host::port::_ => Some(JMXOptions(host,port.toInt))
+  case _ => None
+}
+JMX.once(options) { _.gcforce }
+

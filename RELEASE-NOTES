@@ -1,0 +1,113 @@
+------------------------------------------------------------------
+JAJMX (JANALYSE-JMX) - JMX SCALA API
+Crosson David - crosson.david@gmail.com
+------------------------------------------------------------------
+
+TODO : Code cleanup
+
+------------------------------------------------------------------
+0.6.4 (2013-05-xx)
+ - added "joramActivationSpec" to the exclusion list when looking 
+   for a jmx implementation... jonas bugs, if we lookup to those kind
+   of instances it generates a global jmx failure...
+ - scala 2.10.2
+ - sbt-eclipse 2.3.0
+ 
+------------------------------------------------------------------
+0.6.3 (2013-05-13)
+ - cpuTimes in threads dumps available in option
+ - threads & cpuTimes test case added ("Thread dumps & CPU times test")
+ - JMX : new properties shortcuts
+   + osName, osVersion
+   + javaVersion, javaRuntimeVersion
+ - JMX : new methods
+  + threadCpuTime(id: Long)
+  + uptime
+  + verbosegc(state: Boolean)
+ - ServiceThreads.threads is now a list instead of an Iterable
+   (because groupBy, sortBy, ... will be typical operations for it...)
+ - fix Local JMX without any options that don't exit
+   (additionnalCleanup parameter added to JMXclassicalImpl) 
+ 
+------------------------------------------------------------------
+0.6.2 (2013-05-04)
+ - NOK : Matthew fix finally not taken into account
+   https://code.google.com/p/janalyse-jmx/issues/detail?id=2
+   REVERTED BACK TO INITIAL IMPLEMENTATION, this fix generates errors such as 
+   "(Signature mismatch for operation dumpAllThreads: (Z, Z) should be (boolean, boolean)))"
+   So initial implementation is the right one, will study this problem more in depth, after some fixes...
+ - buildOperationSignature fixes with correct and tested signatures :
+     String => "java.lang.String"
+     Array[String] => "[Ljava.lang.String;"
+ - add tests for all type conversions supported by buildOperationSignature
+ - JMX.unregister method added
+ - scala 2.10.1
+ - scala-logging 1.0.1
+ - sbt-eclipse 2.1.2
+ - code source reorganized
+ 
+------------------------------------------------------------------
+0.6.1 (2013-01-16)
+ - now using sbt 0.12.1
+ - now using sbteclipse 2.1.0
+ - now using scalatest 1.9.1
+ - add support for scala 2.10.0
+ - fix a warning with a type erasure problem
+ - trait ASSignature is now sealed
+ - various enhancements
+ - adding scalalogging support, thanks to Dragos Manolescu
+ - Fix : some attributes are not discovered : 
+      error message Couln't build attributes map for MBean com.mchange.v2.c3p0:type=PooledDataSource[2vs2698saverehuwbtrg|47c39412] (null)
+   => JMX AttributeInfo getDescription may return null value, using the Option Monad to manage that possible null value
+
+------------------------------------------------------------------
+0.5.0 (2012-07-31)
+ - cleanup, refactoring & general enhancements
+ - Support for both generic host/port and jmxservice url approaches (although hidden by default)
+ - automatic jmxurl lookups using known formats (external jars may be required, as for example jboss-client.jar)
+ - application server type detection (whoami method) : jboss, tomcat, jonas, webmethod, jetty taken into account
+   + more tests required against various releases... 
+ - straightforward threads dumps method added (with automatic support of dumpAllThreads starting from Java 6)
+ - JMXOptions can now be built from a JMXServiceURL + credentials
+ - Performance enhancements
+   + mbeaninfos cached
+ - README file added
+ - JMX.apply now with optional username & password as arguments
+ - new methods.fields to RichMBean :
+    + attributeNames():List[String]
+    + domain
+
+------------------------------------------------------------------
+0.4.0
+ - ConnectException taken into account in RichMBean genericGetter in order to propagates connection failures and allow api users to restarts...
+ - CompositeData & TabularData support enhancements
+ - API CHANGES !! getOption disappear, get method now returns an Option. previous get method replaced by apply.
+ - more tests cases
+ - jmx mbeans queries was broken, now the query is build with an object name instead of a string 
+ - findMBeanServers made public and moved to JMX object
+ - checkServiceURL added to JMXObject : checks if a jmx service url works.
+ - getInt added to mbean
+ - now using sbt 0.11.3
+ - now using sbt-assembly 0.8.1
+ - now using sbteclipse 2.1.0-RC1
+ - now using scalatest 1.8
+ - trap exceptions while building attributes map in RichMBean
+ - various examples scripts fixes
+
+
+------------------------------------------------------------------
+0.3.1
+ - Added an additionnal filter on rmi registry result list to avoid some border side effect when trying to lookup for some entries
+   Looks like Jonas doesn't like when we lookup entries such as TMFactory or RMI_SERVER_RPC, it broke all next lookup attempts !!!
+   (findMBeanServers)
+ - updated for scala 2.9.2 support
+ - scalatest 1.7.2
+
+
+------------------------------------------------------------------
+0.3.0 
+ - JMXOptions now contains an extra field "name" which allow user to friendly identify a remote jmx system
+ - added a package object jajmx to define shortcuts to fr.janalyse.jmx.JMX class and object
+ - JMX.connect renamed to JMX.once
+ - scaladoc generation now works fine, follow hack described here : https://github.com/harrah/xsbt/issues/85
+ 

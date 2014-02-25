@@ -1,0 +1,20 @@
+#!/bin/sh
+exec java -jar jajmx.jar "$0" "$@"
+!#
+
+import fr.janalyse.jmx._
+
+val options = args.toList match {
+  case host::port::_ => Some(JMXOptions(host,port.toInt))
+  case _ => None
+}
+
+JMX.once(options) { jmx =>
+  for {
+    mbean <- jmx.mbeans
+    attr  <- mbean.attributes.collect{case n:RichNumberAttribute => n}
+    value <- mbean.getLong(attr)
+    } {
+    println(s"${mbean.name} - ${attr.name} = ${value}")
+  }
+}

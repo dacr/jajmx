@@ -1,0 +1,36 @@
+#!/bin/sh
+exec java -jar jajmx.jar "$0" "$@"
+!#
+
+import jajmx._
+
+if (args.size == 0) {
+  println("Usage   : jmxgrep host port - searchMask1 ... searchMaskN")
+  println("  if no args given so now let's connecting to myself, and list my mbeans...") 
+}
+
+val (options, masks) = args.toList match {
+  case host::port::"-"::masks => 
+            (Some(JMXOptions(host,port.toInt)), masks.map{s=>("(?i)"+s).r})
+  case "-"::masks => (None, masks.map{s=>("(?i)"+s).r})
+  case _ => (None,List.empty[util.matching.Regex])
+}
+
+def truncate(str:String, n:Int=60) = {
+  val nonl=str.replaceAll("\n", " ").replaceAll("\r", "")
+  if (nonl.size>n) nonl.take(n)+"..." else nonl
+}
+
+JMX.once(options) { jmx =>
+  for {
+     mbean <- jmx.mbeans
+     attr  <- mbean.attributes
+     value <- mbean.getString(attr) } {
+     
+    val found = List(mbean.name, attr.name, value).exists{item =>
+       masks.exists{_.findFirstIn(item).isDefined }
+    }
+    if (masks.isEmpty || found) 
+      println(s"${mbean.name} - ${attr.name} = ${truncate(value)}")
+  }
+}

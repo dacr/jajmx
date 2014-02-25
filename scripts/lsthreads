@@ -1,0 +1,27 @@
+#!/bin/sh
+exec java -jar jajmx.jar "$0" "$@"
+!#
+import jajmx._
+
+val options = args.toList match {
+  case host::port::_ => Some(JMXOptions(host,port.toInt))
+  case _ => None
+}
+
+JMX.once(options) { jmx =>
+  for (dump <- jmx.threadsDump(0)) {
+    val threads = dump.threads
+    val countByState = 
+        threads
+          .groupBy(_.status)
+          .map{ case (state,sublist) => state -> sublist.size}
+          .map{ case (state,count) => state+":"+count}
+          .mkString(" ")
+    
+    println("Total %d threads,  %s".format(threads.size, countByState))
+    for ( ti <- threads sortBy {_.id } ) {
+      println("%d - %s - %s".format(ti.id, ti.status, ti.name) )
+    }
+  }
+}
+
