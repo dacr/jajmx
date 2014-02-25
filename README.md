@@ -14,7 +14,7 @@ The goal is to simplify jmx operations on remote (or local) JVM. Work on this li
 *Add JAnalyse repository in SBT as follow* :
 ```resolvers += "JAnalyse Repository" at "http://www.janalyse.fr/repository/"```
 
-##Console mode usage example, connecting to myself :
+##Console mode usage example :
 
 ```
  $ java -jar jajmx.jar 
