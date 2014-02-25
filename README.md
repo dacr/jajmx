@@ -40,7 +40,7 @@ STANDARD JMX can be used to get JBOSS metrics, but unfortunately JVM metrics can
     </server>
 ```
 
-##For JBOSS <7.x  & >=6
+##For JBOSS `<` 7.x  & `>=` 6
 
 ```sh
 JAVA_OPTS=$JAVA_OPTS" -Dcom.sun.management.jmxremote"
@@ -106,9 +106,9 @@ Added user 'admin' to file '/opt/servers/jboss-as-7.1.1.Final/standalone/configu
 Added user 'admin' to file '/opt/servers/jboss-as-7.1.1.Final/domain/configuration/mgmt-users.properties'
 ```
 
-Small checks with JBOSS 7:
+Small checks with JBOSS 7
 
-using jconsole : 
+###using jconsole : 
 ```
   ./jboss-as-7.1.1.Final/bin/jconsole.sh
      service:jmx:remoting-jmx://10.134.115.167:9999    username = admin  password = ""
@@ -117,7 +117,7 @@ using jconsole :
   jconsole -J-Djava.class.path=/home/dcr/.gentoo/java-config-2/current-user-vm/lib/jconsole.jar:/home/dcr/.gentoo/java-config-2/current-user-vm/lib/tools.jar:/home/dcr/servers/jboss-as-7.1.1.Final/lib/jboss-client.jar
 ```
 
-using JAJMX : 
+###using JAJMX : 
 ```
  $ java -classpath ./bin/client/jboss-client.jar:/opt/analysis/analysis.jar com.orange.analysis.Main
  Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_09).
