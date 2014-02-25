@@ -1,3 +1,230 @@
+#JAJMX : High level scala JMX API
+
+The goal is to simplify jmx operations on remote (or local) JVM. Work on this library is still in progress... but implemented features work well. One of the main usages of this jmx abstraction layer is to simplify extraction of jmx metrics such as getting jdbc connections or busy threads usage trends. This library only requires one IP and one PORT in order to connect to a remote JMX plateform, no service url is required !
+
+[*JAnalyse software maven repository*](http://www.janalyse.fr/repository/)
+
+[*Scala docs*](http://www.janalyse.fr/scaladocs/janalyse-jmx) 
+
+*Current release* : 0.6.3 (for scala 2.10) 0.5.0 (for older scala releases) 
+
+*Declare dependency in SBT as follow* :
+```libraryDependencies += "fr.janalyse"   %% "janalyse-jmx" % "0.6.3" % "compile"``
+
+*Add JAnalyse repository in SBT as follow* :
+```resolvers += "JAnalyse Repository" at "http://www.janalyse.fr/repository/"```
+
+##Console mode usage example, connecting to myself :
+
+```
+ $ java -jar jajmx.jar 
+Welcome to Scala version 2.10.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_45).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import jajmx._
+import jajmx._
+
+scala> val jmx = JMX()
+
+scala> import jmx._
+import jmx._
+
+scala> verbosegc()
+
+scala> gcforce()
+[GC 62584K->30221K(310080K), 0.0015270 secs]
+[Full GC 30221K->30014K(310080K), 0.1879440 secs]
+
+scala> osVersion
+res3: Option[String] = Some(3.7.10-gentoo)
+
+scala> osName
+res4: Option[String] = Some(Linux)
+
+scala> mbeans.take(10).map(_.name).foreach{println _}
+java.lang:type=Memory
+java.lang:type=MemoryPool,name=PS Eden Space
+java.lang:type=MemoryPool,name=PS Survivor Space
+java.lang:type=MemoryPool,name=Code Cache
+java.lang:type=GarbageCollector,name=PS MarkSweep
+java.lang:type=Runtime
+java.lang:type=ClassLoading
+java.lang:type=Threading
+java.util.logging:type=Logging
+java.lang:type=Compilation
+
+scala> val mythreading=get("java.lang:type=Runtime")
+mythreading: Option[fr.janalyse.jmx.RichMBean] = Some(RichMBean(java.lang:type=Runtime,<function0>,<function1>,<function2>,<function2>))
+
+scala> mythreading.map{_.attributes.foreach{attr => println(attr.name)}}
+SynchronizerUsageSupported
+ThreadCount
+TotalStartedThreadCount
+ThreadAllocatedMemorySupported
+ThreadContentionMonitoringSupported
+ThreadAllocatedMemoryEnabled
+AllThreadIds
+DaemonThreadCount
+ThreadContentionMonitoringEnabled
+CurrentThreadUserTime
+PeakThreadCount
+ObjectMonitorUsageSupported
+ThreadCpuTimeSupported
+CurrentThreadCpuTime
+ThreadCpuTimeEnabled
+CurrentThreadCpuTimeSupported
+
+scala> close
+
+scala> :q
+
+```
+
+##gcforce script
+
+Only provide to the script, host and port of a remote JVM with JMX enabled, and this script will force the JVM to Garbage Collect major operation.
+
+```scala
+#!/bin/sh
+exec java -verbosegc -jar jajmx.jar "$0" "$@"
+!#
+
+if (args.size < 2) {
+  println("Usage   : jmxgrep host port")
+  println("  args are not compliant so now let's connecting to myself, and force a gc...") 
+}
+
+import fr.janalyse.jmx._
+
+val options = args.toList match {
+  case host::port::_ => Some(JMXOptions(host,port.toInt))
+  case _ => None
+}
+JMX.once(options) { _.gcforce }
+```
+
+
+
+A short gc force script (a self test) : 
+
+```scala
+#!/bin/sh
+exec java -jar jajmx.jar "$0" "$@"
+!#
+
+jajmx.JMX.once() { jmx =>
+  jmx.verbosegc() 
+  jmx.gcforce()
+}
+
+```
+
+
+##lsnum script
+
+This scala script search for jmx numerical values. This jmxgrep script can be tested against itself : "lsnum"
+
+```scala
+#!/bin/sh
+exec java -jar jajmx.jar "$0" "$@"
+!#
+
+import fr.janalyse.jmx._
+
+val options = args.toList match {
+  case host::port::_ => Some(JMXOptions(host,port.toInt))
+  case _ => None
+}
+
+JMX.once(options) { jmx =>
+  for {
+    mbean <- jmx.mbeans
+    attr  <- mbean.attributes.collect{case n:RichNumberAttribute => n}
+    value <- mbean.getLong(attr)
+    } {
+    println(s"${mbean.name} - ${attr.name} = ${value}")
+  }
+}
+
+```
+
+##jmxgrep script
+
+This scala script search matching mbean name, attribute name, or value satisfying the given set of regular exception. This jmxgrep script can be tested against itself : "jmxgrep - vendor version"
+
+```scala
+#!/bin/sh
+exec java -jar jajmx.jar "$0" "$@"
+!#
+
+import jajmx._
+
+if (args.size == 0) {
+  println("Usage   : jmxgrep host port - searchMask1 ... searchMaskN")
+  println("  if no args given so now let's connecting to myself, and list my mbeans...") 
+}
+
+val (options, masks) = args.toList match {
+  case host::port::"-"::masks => 
+            (Some(JMXOptions(host,port.toInt)), masks.map{s=>("(?i)"+s).r})
+  case "-"::masks => (None, masks.map{s=>("(?i)"+s).r})
+  case _ => (None,List.empty[util.matching.Regex])
+}
+
+def truncate(str:String, n:Int=60) = {
+  val nonl=str.replaceAll("\n", " ").replaceAll("\r", "")
+  if (nonl.size>n) nonl.take(n)+"..." else nonl
+}
+
+JMX.once(options) { jmx =>
+  for {
+     mbean <- jmx.mbeans
+     attr  <- mbean.attributes
+     value <- mbean.getString(attr) } {
+     
+    val found = List(mbean.name, attr.name, value).exists{item =>
+       masks.exists{_.findFirstIn(item).isDefined }
+    }
+    if (masks.isEmpty || found) 
+      println(s"${mbean.name} - ${attr.name} = ${truncate(value)}")
+  }
+}
+```
+
+##lsthreads script
+
+Connect to a remote JVM using just the host adress and the used JMX port, and then list all active threads and their current states.
+
+```scala
+#!/bin/sh
+exec java -jar jajmx.jar "$0" "$@"
+!#
+import jajmx._
+
+val options = args.toList match {
+  case host::port::_ => Some(JMXOptions(host,port.toInt))
+  case _ => None
+}
+
+JMX.once(options) { jmx =>
+  for (dump <- jmx.threadsDump(0)) {
+    val threads = dump.threads
+    val countByState = 
+        threads
+          .groupBy(_.status)
+          .map{ case (state,sublist) => state -> sublist.size}
+          .map{ case (state,count) => state+":"+count}
+          .mkString(" ")
+    
+    println("Total %d threads,  %s".format(threads.size, countByState))
+    for ( ti <- threads sortBy {_.id } ) {
+      println("%d - %s - %s".format(ti.id, ti.status, ti.name) )
+    }
+  }
+}
+```
+
 
 #JMX Configuration Notes
 
@@ -106,9 +333,9 @@ Added user 'admin' to file '/opt/servers/jboss-as-7.1.1.Final/standalone/configu
 Added user 'admin' to file '/opt/servers/jboss-as-7.1.1.Final/domain/configuration/mgmt-users.properties'
 ```
 
-Small checks with JBOSS 7
+###Small checks with JBOSS 7
 
-###using jconsole : 
+####using jconsole : 
 ```
   ./jboss-as-7.1.1.Final/bin/jconsole.sh
      service:jmx:remoting-jmx://10.134.115.167:9999    username = admin  password = ""
@@ -117,7 +344,7 @@ Small checks with JBOSS 7
   jconsole -J-Djava.class.path=/home/dcr/.gentoo/java-config-2/current-user-vm/lib/jconsole.jar:/home/dcr/.gentoo/java-config-2/current-user-vm/lib/tools.jar:/home/dcr/servers/jboss-as-7.1.1.Final/lib/jboss-client.jar
 ```
 
-###using JAJMX : 
+####using JAJMX : 
 ```
  $ java -classpath ./bin/client/jboss-client.jar:/opt/analysis/analysis.jar com.orange.analysis.Main
  Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_09).
