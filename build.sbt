@@ -6,7 +6,7 @@ organization :="fr.janalyse"
 
 organizationHomepage := Some(new URL("http://www.janalyse.fr"))
 
-scalaVersion := "2.10.2"
+scalaVersion := "2.10.3"
 
 //crossScalaVersions := Seq("2.10.2")
 

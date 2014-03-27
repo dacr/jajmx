@@ -6,12 +6,11 @@ Crosson David - crosson.david@gmail.com
 TODO : Code cleanup
 
 ------------------------------------------------------------------
-0.6.4 (2013-05-xx)
+0.6.4 (2014-03-27)
  - added "joramActivationSpec" to the exclusion list when looking 
    for a jmx implementation... jonas bugs, if we lookup to those kind
    of instances it generates a global jmx failure...
- - scala 2.10.2
- - sbt-eclipse 2.3.0
+ - scala 2.10.3
  
 ------------------------------------------------------------------
 0.6.3 (2013-05-13)
