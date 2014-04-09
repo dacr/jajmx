@@ -14,7 +14,7 @@ libraryDependencies ++= Seq(
     "com.typesafe"                  %% "scalalogging-slf4j"  % "1.0.1",
     "org.json4s"                    %% "json4s-native"       % "3.2.8",
     "org.apache.httpcomponents"      % "httpclient"          % "4.3.3",
-    "org.jolokia"                    % "jolokia-client-java" % "1.2.0",
+//    "org.jolokia"                    % "jolokia-client-java" % "1.2.0",
     "org.scalatest"                 %% "scalatest"           % "1.9.1" % "test",
     "junit"                          % "junit"               % "4.10"  % "test"
 )

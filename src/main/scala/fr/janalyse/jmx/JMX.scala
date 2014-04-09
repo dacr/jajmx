@@ -257,7 +257,7 @@ object JMX extends Logging {
 	      val content = io.Source.fromInputStream(entity.getContent).getLines().mkString("\n")
 	      EntityUtils.consume(entity)
 	      if (content.contains("jolokia")) 
-	        Some(new JMXjolokiaImpl(baseUrl, Some(opt.copy(contextbase=Some(context)))))
+	        Some(new JMXjolokiaImpl(getHttpClient, baseUrl, Some(opt.copy(contextbase=Some(context)))))
 	      else None
       } finally {
         response.close()

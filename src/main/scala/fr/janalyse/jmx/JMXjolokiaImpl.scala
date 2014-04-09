@@ -2,21 +2,23 @@ package fr.janalyse.jmx
 
 import com.typesafe.scalalogging.slf4j.Logging
 import javax.management.ObjectName
-
-import org.jolokia.client._
-import org.jolokia.client.request._
-
+import org.apache.http.client._
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.auth._
+import org.apache.http.util.EntityUtils
+import org.apache.http.impl.client.CloseableHttpClient
 
 class JMXjolokiaImpl(
-  val url: String,
+  getHttpClient: () => CloseableHttpClient,
+  val baseUrl: String,
   val options: Option[JMXOptions] = Some(JMXOptions(host = "localhost", port = 8080, contextbase = Some("/jolokia"))),
   additionalCleaning: Option[() => Any] = None) extends JMX with Logging {
 
-  val j4p = new J4pClient(url)
+  val httpclient = getHttpClient()
 
   def close() = {
     try {
-      j4p.getHttpClient().getConnectionManager().shutdown()
+      httpclient.close()
     } catch {
       case e: Exception => logger.warn("Exception while closing http connection, let's ignore and continue..." + e.getMessage)
     }
@@ -27,6 +29,20 @@ class JMXjolokiaImpl(
     }
   }
 
+  def httpGet(rq: String): Tuple2[Int, String] = {
+    val httpget = new HttpGet(baseUrl +rq)
+    val response = httpclient.execute(httpget)
+    try {
+      val rc = response.getStatusLine().getStatusCode()
+      val entity = response.getEntity
+      val content = io.Source.fromInputStream(entity.getContent).getLines().mkString("\n")
+      EntityUtils.consume(entity)
+      (rc, content)
+    } finally {
+      response.close()
+    }
+  }
+  
 
   def exists(name: String): Boolean = ??? // j4p.execute(new J4pReadRequest(name))
   def domains: List[String] = ???
@@ -46,7 +62,6 @@ class JMXjolokiaImpl(
       () => mbeanInfoGetter(objectName),
       (attrname) => attributeGetter(objectName, attrname),
       (attrname, attrval) => attributeSetter(objectName, attrname, attrval),
-      (operationName, args) => operationCaller(objectName, operationName, args)
-    )
+      (operationName, args) => operationCaller(objectName, operationName, args))
 
 }
