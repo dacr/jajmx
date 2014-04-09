@@ -21,6 +21,7 @@ case class JMXOptions(
   host: String = "localhost",
   port: Int = 1099,
   url: Option[JMXServiceURL] = None,
+  contextbase:Option[String] = None, 
   name: Option[String] = None,
   username: Option[String] = None,
   password: Option[String] = None,

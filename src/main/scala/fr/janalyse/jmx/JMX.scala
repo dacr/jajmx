@@ -218,12 +218,58 @@ object JMX extends Logging {
     options match {
       case None => getLocalImpl() // For quick test or evaluation purposes
       case Some(cfg) =>
-        jmxLookup(cfg) getOrElse {
+        jolokiaLookup(cfg) orElse jmxLookup(cfg) getOrElse {
           throw new RuntimeException("Couldn't find any jmx connector for %s".format(cfg.toString))
         }
     }
   }
 
+  private def jolokiaLookup(opt: JMXOptions) : Option[JMX] = {
+    import org.apache.http.impl.client._
+    import org.apache.http.client.methods.HttpGet
+    import org.apache.http.auth._
+    import org.apache.http.util.EntityUtils
+
+	import opt.{host,port}
+    
+    def getHttpClient() = {
+	    val credsProvider = new BasicCredentialsProvider()
+	    for { username <- opt.username ;  password <- opt.password } {
+	      credsProvider.setCredentials(
+	        new AuthScope(host, port),
+	        new UsernamePasswordCredentials(username, password))
+	    }
+	    HttpClients.custom()
+	               .setDefaultCredentialsProvider(credsProvider)
+	               .build()
+    }
+
+    val httpclient = getHttpClient()
+    try {
+      val context = opt.contextbase.getOrElse("/jolokia")
+      val baseUrl = s"http://$host:$port" + context 
+      val testUrl = baseUrl + "/version"
+      val httpget = new HttpGet(testUrl)
+      val response = httpclient.execute(httpget)
+      try {
+          val rc = response.getStatusLine().getStatusCode()
+	      val entity = response.getEntity
+	      val content = io.Source.fromInputStream(entity.getContent).getLines().mkString("\n")
+	      EntityUtils.consume(entity)
+	      if (content.contains("jolokia")) 
+	        Some(new JMXjolokiaImpl(baseUrl, Some(opt.copy(contextbase=Some(context)))))
+	      else None
+      } finally {
+        response.close()
+      }
+    } catch {
+      case e:java.net.ConnectException => None // Nothing behind the specified port
+      case e:org.apache.http.NoHttpResponseException => None // Not Http response !
+    } finally {
+        httpclient.close()
+    }
+  }
+  
   private def jmxLookup(opt: JMXOptions): Option[JMX] = {
     getMBeanServerFromKnownJMXServiceUrl(opt) orElse {
       JMX.findMBeanServers(opt.host, opt.port, opt.credentials)

@@ -337,7 +337,7 @@ class JMXAPITest extends FunSuite with ShouldMatchers {
       info(s"Thread CPU usage = ${cpuPercent}")
       
       // testME thread will of course use 1 cpu, so percent should be >90%
-      cpuPercent should be >(95L)
+      cpuPercent should be >(90L)
     }
   }
 

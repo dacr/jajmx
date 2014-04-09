@@ -6,6 +6,15 @@ Crosson David - crosson.david@gmail.com
 TODO : Code cleanup
 
 ------------------------------------------------------------------
+0.7.0 (2014-xx-yy) WORK IN PROGRESS
+
+ - support for jolokia jmx API (HTTP / JSON)
+ - json4s-native 3.2.8 dependency added for JSON parsing purposes
+ - httpclient 4.3.3 dependency added for HTTP client requests
+ - jolokia-client-java 1.2.0 dependency added
+ - scala 2.10.4
+
+------------------------------------------------------------------
 0.6.4 (2014-03-27)
  - added "joramActivationSpec" to the exclusion list when looking 
    for a jmx implementation... jonas bugs, if we lookup to those kind
