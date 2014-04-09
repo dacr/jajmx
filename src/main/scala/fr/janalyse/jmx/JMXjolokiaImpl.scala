@@ -7,6 +7,11 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.auth._
 import org.apache.http.util.EntityUtils
 import org.apache.http.impl.client.CloseableHttpClient
+import org.json4s._
+import org.json4s.native.JsonMethods._
+//import org.json4s.JsonAST._
+import org.json4s.JsonDSL._
+
 
 class JMXjolokiaImpl(
   getHttpClient: () => CloseableHttpClient,
@@ -29,7 +34,7 @@ class JMXjolokiaImpl(
     }
   }
 
-  def httpGet(rq: String): Tuple2[Int, String] = {
+  def httpGet(rq: String): Tuple2[Int, JValue] = {
     val httpget = new HttpGet(baseUrl +rq)
     val response = httpclient.execute(httpget)
     try {
@@ -37,17 +42,37 @@ class JMXjolokiaImpl(
       val entity = response.getEntity
       val content = io.Source.fromInputStream(entity.getContent).getLines().mkString("\n")
       EntityUtils.consume(entity)
-      (rc, content)
+      (rc, parse(content))
     } finally {
       response.close()
     }
   }
   
 
-  def exists(name: String): Boolean = ??? // j4p.execute(new J4pReadRequest(name))
-  def domains: List[String] = ???
+  def exists(name: String): Boolean = {
+    val (rc, content) = httpGet("")
+    ???
+  }
+  
+  def domains: List[String] = {
+    val (rc, js) = httpGet("/list?maxDepth=1")
+    val values = (js \ "value").values
+    for { 
+      JObject(entries) <- (js \ "value")
+      (domain,_) <- entries
+      } yield domain
+  }
+  
+  def names():List[String] = {
+    val (rc, js) = httpGet("/list?maxDepth=2")
+    for { JObject(entries) <- (js \ "value") ; (name,_) <- entries} yield name
+  }
+  
+  def mbeans(): List[RichMBean] = {
+    ???
+  }
+  
   def mbeans(query: String): List[RichMBean] = ???
-  def mbeans(): List[RichMBean] = ??? // j4p.execute(new J4pListRequest())
   def apply(name: String): RichMBean = ???
 
   private def mbeanInfoGetter(objectName: ObjectName) = ???
