@@ -12,10 +12,9 @@ scalaVersion := "2.10.4"
 
 libraryDependencies ++= Seq( 
     "com.typesafe"                  %% "scalalogging-slf4j"  % "1.0.1",
-    "ch.qos.logback" % "logback-classic" % "1.0.3",
     "org.json4s"                    %% "json4s-native"       % "3.2.8",
     "org.apache.httpcomponents"      % "httpclient"          % "4.3.3",
-//    "org.jolokia"                    % "jolokia-client-java" % "1.2.0",
+    "ch.qos.logback"                 % "logback-classic"     % "1.0.3" % "test",
     "org.scalatest"                 %% "scalatest"           % "1.9.1" % "test",
     "junit"                          % "junit"               % "4.10"  % "test"
 )
