@@ -9,8 +9,8 @@ import org.apache.http.util.EntityUtils
 import org.apache.http.impl.client.CloseableHttpClient
 import org.json4s._
 import org.json4s.native.JsonMethods._
-//import org.json4s.JsonAST._
 import org.json4s.JsonDSL._
+import java.net.URLEncoder
 
 class JMXjolokiaImpl(
   getHttpClient: () => CloseableHttpClient,
@@ -49,10 +49,7 @@ class JMXjolokiaImpl(
 
   // ============================================================================
 
-  def jescape(oname: String) = {
-    oname
-      .replaceAll("/", "%2F")
-  }
+  def jescape(str: String) = URLEncoder.encode(str, "US-ASCII")
 
   def jread(oname: String, attr: Option[String] = None): JValue = {
     val escapedname = jescape(oname)
@@ -75,7 +72,7 @@ class JMXjolokiaImpl(
     maxDepth: Option[Int] = None,
     maxObjects: Option[Int] = None) = {
     val basequery =
-      "/list" + domain.map(d => "/" + d + path.map("/" + _).getOrElse("")).getOrElse("")
+      "/list" + domain.map(d => "/" + jescape(d) + path.map("/" + jescape(_)).getOrElse("")).getOrElse("")
     val params = List(
       maxDepth.map(s"maxDepth=" + _),
       maxObjects.map(s"maxObjects=" + _)
@@ -133,24 +130,40 @@ class JMXjolokiaImpl(
   def getAttributesMetaData(objectName: ObjectName): List[AttributeMetaData] = {
     val js = jlist(Some(objectName.getDomain), Some(objectName.getKeyPropertyListString))
     val value = js \ "value"
-    val JObject(attrs) = value \ "attr"
-    val attrsInfos = for {
-      (name, info) <- attrs
-      JObject(entries) <- info
-      meta = entries.toMap
-      JString(adesc) <- meta.get("desc")
-      JString(atype) <- meta.get("type")
-      JBool(rw) <- meta.get("rw")
-    } yield {
-      AttributeMetaData(name, adesc, atype, rw)
+    try {
+	    val JObject(attrs) = value \ "attr"
+	    val attrsInfos = for {
+	      (name, info) <- attrs
+	      JObject(entries) <- info
+	      meta = entries.toMap
+	      JString(adesc) <- meta.get("desc")
+	      JString(atype) <- meta.get("type")
+	      JBool(rw) <- meta.get("rw")
+	    } yield {
+	      AttributeMetaData(name, adesc, atype, rw)
+	    }
+	    attrsInfos
+    } catch {
+      case e:Exception =>
+        e.printStackTrace
+        List.empty
     }
-    attrsInfos
   }
-
 
   def getAttribute(objectName: ObjectName, attrname: String) = {
     val js = jread(objectName.getCanonicalName(), Some(attrname))
-    Option(js \ "value")
+    val res:Object = (js \ "value") match {
+       case JInt(e)     => e
+       case JDouble(e)  => new java.lang.Double(e)
+       case JDecimal(e) => e
+       case JString(e)  => e
+       case JArray(l) => l
+       case JBool(l) => new java.lang.Boolean(l)
+       case JNothing => null
+       case JNull => null
+       case JObject(o) => o
+    }
+    Some(res)
   }
 
   def setAttribute(objectName: ObjectName, attrname: String, attrvalue: Any) {

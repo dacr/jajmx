@@ -166,8 +166,7 @@ class JMXAPITest extends FunSuite with ShouldMatchers {
   // ================================================================================================
   test("one line jmx browsing") {
     val results =
-      for (mb <- JMX().mbeans; attr <- mb.attributes; value <- mb.getString(attr))
-        yield attr.name -> value
+      for (mb <- JMX().mbeans; attr <- mb.attributes; value <- mb.getString(attr)) yield attr.name -> value
 
     results.size should be > (0)
   }

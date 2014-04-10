@@ -31,7 +31,9 @@ case class RichMBean(
   attributesMapGetter: () => Map[String, RichAttribute],
   attributeGetter: (String) => Option[Object],
   attributeSetter: (String, Any) => Unit,
-  operationCaller: (String, Array[Any]) => Option[Any]) {
+  operationCaller: (String, Array[Any]) => Option[Any]) extends Logging {
+ 
+  override def toString() = name
   
   val name = objectName.toString()
   val domain = objectName.getDomain()
@@ -56,7 +58,7 @@ case class RichMBean(
       case e: java.net.ConnectException => throw e
       case e: java.net.SocketException => throw e
       case x: Exception =>
-        //println("Warning: Error while getting value for attribute %s mbean %s (%s)".format(attr.name, name, x))
+        logger.error(s"Warning: Error while getting value for attribute ${attr.name} mbean $name", x)
         None
     }
   }

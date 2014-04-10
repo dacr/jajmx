@@ -40,10 +40,12 @@ trait RichNumberAttribute extends RichAttribute {
     case e: java.lang.Float => e.toDouble
     case e: java.lang.Double => e
     case e: java.lang.String => e.toDouble
-    case JInt(e)     => e.toDouble
-    case JDouble(e)  => e.toDouble
-    case JDecimal(e) => e.toDouble
-    case JString(e)  => e.toDouble
+    case e: BigInt => e.toDouble
+    case e: BigDecimal => e.toDouble
+//    case JInt(e)     => e.toDouble
+//    case JDouble(e)  => e.toDouble
+//    case JDecimal(e) => e.toDouble
+//    case JString(e)  => e.toDouble
   }
   def asLong(ob: Object): Long = ob match { // TODO BAD
     case e: java.lang.Byte => e.toLong
@@ -53,10 +55,12 @@ trait RichNumberAttribute extends RichAttribute {
     case e: java.lang.Float => e.toLong
     case e: java.lang.Double => e.toLong
     case e: java.lang.String => e.toLong
-    case JInt(e)     => e.toLong
-    case JDouble(e)  => e.toLong
-    case JDecimal(e) => e.toLong
-    case JString(e)  => e.toLong
+    case e: BigInt => e.toLong
+    case e: BigDecimal => e.toLong
+//    case JInt(e)     => e.toLong
+//    case JDouble(e)  => e.toLong
+//    case JDecimal(e) => e.toLong
+//    case JString(e)  => e.toLong
   }
   def asInt(ob: Object): Int = ob match { // TODO BAD
     case e: java.lang.Byte => e.toInt
@@ -66,10 +70,12 @@ trait RichNumberAttribute extends RichAttribute {
     case e: java.lang.Float => e.toInt
     case e: java.lang.Double => e.toInt
     case e: java.lang.String => e.toInt
-    case JInt(e)     => e.toInt
-    case JDouble(e)  => e.toInt
-    case JDecimal(e) => e.toInt
-    case JString(e)  => e.toInt
+    case e: BigInt => e.toInt
+    case e: BigDecimal => e.toInt
+//    case JInt(e)     => e.toInt
+//    case JDouble(e)  => e.toInt
+//    case JDecimal(e) => e.toInt
+//    case JString(e)  => e.toInt
   }
 
 }
