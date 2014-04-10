@@ -16,12 +16,16 @@
 package fr.janalyse.jmx
 
 import javax.management.openmbean.{ CompositeData, CompositeDataSupport }
+import org.json4s._
 
 
 trait RichAttribute {
   val name: String
   val desc: Option[String]
-  def asString(ob: Object): String = ob.toString() // TODO BAD
+  def asString(ob: Object): String = ob match {
+    case JString(str) => str
+    case x => x.toString() // TODO BAD
+  }
 }
 
 trait RichArrayAttribute extends RichAttribute {
@@ -36,6 +40,10 @@ trait RichNumberAttribute extends RichAttribute {
     case e: java.lang.Float => e.toDouble
     case e: java.lang.Double => e
     case e: java.lang.String => e.toDouble
+    case JInt(e)     => e.toDouble
+    case JDouble(e)  => e.toDouble
+    case JDecimal(e) => e.toDouble
+    case JString(e)  => e.toDouble
   }
   def asLong(ob: Object): Long = ob match { // TODO BAD
     case e: java.lang.Byte => e.toLong
@@ -45,6 +53,10 @@ trait RichNumberAttribute extends RichAttribute {
     case e: java.lang.Float => e.toLong
     case e: java.lang.Double => e.toLong
     case e: java.lang.String => e.toLong
+    case JInt(e)     => e.toLong
+    case JDouble(e)  => e.toLong
+    case JDecimal(e) => e.toLong
+    case JString(e)  => e.toLong
   }
   def asInt(ob: Object): Int = ob match { // TODO BAD
     case e: java.lang.Byte => e.toInt
@@ -54,6 +66,10 @@ trait RichNumberAttribute extends RichAttribute {
     case e: java.lang.Float => e.toInt
     case e: java.lang.Double => e.toInt
     case e: java.lang.String => e.toInt
+    case JInt(e)     => e.toInt
+    case JDouble(e)  => e.toInt
+    case JDecimal(e) => e.toInt
+    case JString(e)  => e.toInt
   }
 
 }
@@ -73,6 +89,10 @@ case class RichCompositeDataAttribute(name: String, desc: Option[String] = None)
           case x: java.lang.Float   => Some((name, x))//Some(name -> new runtime.RichDouble(x.toDouble))
           case x: java.lang.Double  => Some((name, x))//Some(name -> new runtime.RichDouble(x.toDouble))
           case x: java.lang.Integer => Some((name, x))//Some(name -> new runtime.RichDouble(x.toDouble))
+/*          case JInt(x)     => Some((name, x))
+          case JDouble(x)  => Some((name, x))
+          case JDecimal(x) => Some((name, x))
+          case JString(x)  => Some((name, x))*/
           case _ => None
         }
     }

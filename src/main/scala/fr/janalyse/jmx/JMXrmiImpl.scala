@@ -23,30 +23,30 @@ import javax.management.ObjectName
 import scala.collection.JavaConversions._
 
 
-private class JMXrmiImpl(rmiConnection: RMIConnection, val options: Option[JMXOptions] = None) extends JMX with Logging {
+private class JMXrmiImpl(rmiConnection: RMIConnection, val options: Option[JMXOptions] = None) extends JMX with Logging with JMXJsr160 {
 
   def close() = try {
     rmiConnection.close
   } catch {
     case e:Exception => logger.error("Exception while closing rmi connection, let's ignore and continue...")
   }
-
-  private def mbeanInfoGetter(objectName: ObjectName) = rmiConnection.getMBeanInfo(objectName, null)
-  private def attributeGetter(objectName: ObjectName, attrname: String) = Option(rmiConnection.getAttribute(objectName, attrname, null))
-  private def attributeSetter(objectName: ObjectName, attrname: String, attrvalue: Any) {
+  
+  def getMBeanInfo(objectName: ObjectName) = rmiConnection.getMBeanInfo(objectName, null)
+  def getAttribute(objectName: ObjectName, attrname: String) = Option(rmiConnection.getAttribute(objectName, attrname, null))
+  def setAttribute(objectName: ObjectName, attrname: String, attrvalue: Any) {
     val attribute = new javax.management.Attribute(attrname, attrvalue)
     rmiConnection.setAttribute(objectName, attribute, null)
   }
-  private def operationCaller(objectName: ObjectName, operationName: String, args: Array[Any]): Option[Any] = {
+  def invoke(objectName: ObjectName, operationName: String, args: Array[Any]): Option[Any] = {
     Option(rmiConnection.invoke(objectName, operationName, args, buildOperationSignature(args), null))
   }
   private def newMBean(objectName: ObjectName) =
     RichMBean(
       objectName,
-      () => mbeanInfoGetter(objectName),
-      (attrname) => attributeGetter(objectName, attrname),
-      (attrname, attrval) => attributeSetter(objectName, attrname, attrval),
-      (operationName, args) => operationCaller(objectName, operationName, args)
+      () => getAttributesMap(objectName),
+      (attrname) => getAttribute(objectName, attrname),
+      (attrname, attrval) => setAttribute(objectName, attrname, attrval),
+      (operationName, args) => invoke(objectName, operationName, args)
     )
 
   def domains: List[String] = rmiConnection.getDomains(null).toList

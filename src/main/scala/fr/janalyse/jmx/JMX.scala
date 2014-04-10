@@ -179,6 +179,42 @@ trait JMX {
       case _: Array[String] => "[Ljava.lang.String;"
     }
   }
+
+  def getAttributesMetaData(objectName: ObjectName):List[AttributeMetaData]
+  
+  def getAttributesMap(objectName: ObjectName): Map[String, RichAttribute] = {
+    val result = for {
+      meta <- getAttributesMetaData(objectName)
+    } yield {
+      val n = meta.name
+      val d = Option(meta.adesc).map(_.trim).filterNot(_.size == 0).filterNot(_ == n)
+      val a: RichAttribute = meta.atype match {
+        case "java.lang.Boolean" | "boolean" | "java.lang.boolean" => RichBooleanAttribute(n, d)
+        case "java.lang.Byte" | "byte" => RichByteAttribute(n, d)
+        case "java.lang.Short" | "short" => RichShortAttribute(n, d)
+        case "java.lang.Integer" | "int" => RichIntAttribute(n, d)
+        case "java.lang.Long" | "long" => RichLongAttribute(n, d)
+        case "java.lang.Float" | "float" => RichFloatAttribute(n, d)
+        case "java.lang.Double" | "double" => RichDoubleAttribute(n, d)
+        case "java.lang.String" | "String" => RichStringAttribute(n, d)
+        //case "java.util.List" =>
+        //case "java.util.Properties" =>
+        case "[Ljava.lang.String;" => RichStringArrayAttribute(n, d)
+        //case "javax.management.openmbean.TabularData"      =>
+        case "javax.management.openmbean.CompositeData"
+            |"javax.management.openmbean.CompositeDataSupport" => RichCompositeDataAttribute(n, d)
+        //case "[Ljavax.management.openmbean.CompositeData;" =>
+        //case "[Ljavax.management.ObjectName;" => 
+        case x =>
+          //println("Warning: Not supported jmx attribute value type %s for %s mbean %s".format(x, n, name))
+          //println(x)
+          RichGenericAttribute(n, d)
+      }
+      n -> a
+    }
+    result.toMap
+  }
+  
 }
 
 object JMX extends Logging {
@@ -263,7 +299,7 @@ object JMX extends Logging {
         response.close()
       }
     } catch {
-      case e:java.net.ConnectException => None // Nothing behind the specified port
+      case e:java.net.SocketException => None // Nothing behind the specified port
       case e:org.apache.http.NoHttpResponseException => None // Not Http response !
     } finally {
         httpclient.close()

@@ -16,17 +16,16 @@
 package fr.janalyse.jmx
 
 import com.typesafe.scalalogging.slf4j.Logging
-
 import javax.management.remote.JMXConnector
 import javax.management.ObjectName
 import javax.management.MBeanServerConnection
-
 import scala.collection.JavaConversions._
+import javax.management.MBeanInfo
 
 private class JMXclassicalImpl(
   conn: JMXConnector,
   val options: Option[JMXOptions] = None,
-  additionalCleaning: Option[() => Any] = None) extends JMX with Logging {
+  additionalCleaning: Option[() => Any] = None) extends JMX with Logging with JMXJsr160 {
   private lazy val mbsc: MBeanServerConnection = conn.getMBeanServerConnection
 
   def close() = {
@@ -42,22 +41,22 @@ private class JMXclassicalImpl(
     }
   }
 
-  private def mbeanInfoGetter(objectName: ObjectName) = mbsc.getMBeanInfo(objectName)
-  private def attributeGetter(objectName: ObjectName, attrname: String) = Option(mbsc.getAttribute(objectName, attrname))
-  private def attributeSetter(objectName: ObjectName, attrname: String, attrvalue: Any) {
+  def getMBeanInfo(objectName: ObjectName):MBeanInfo = mbsc.getMBeanInfo(objectName)
+  def getAttribute(objectName: ObjectName, attrname: String) = Option(mbsc.getAttribute(objectName, attrname))
+  def setAttribute(objectName: ObjectName, attrname: String, attrvalue: Any) {
     val attribute = new javax.management.Attribute(attrname, attrvalue)
     mbsc.setAttribute(objectName, attribute)
   }
-  private def operationCaller(objectName: ObjectName, operationName: String, args: Array[Any]): Option[Any] = {
+  def invoke(objectName: ObjectName, operationName: String, args: Array[Any]): Option[Any] = {
     Option(mbsc.invoke(objectName, operationName, args.map(_.asInstanceOf[Object]), buildOperationSignature(args)))
   }
   private def newMBean(objectName: ObjectName) =
     RichMBean(
       objectName,
-      () => mbeanInfoGetter(objectName),
-      (attrname) => attributeGetter(objectName, attrname),
-      (attrname, attrval) => attributeSetter(objectName, attrname, attrval),
-      (operationName, args) => operationCaller(objectName, operationName, args)
+      () => getAttributesMap(objectName),
+      (attrname) => getAttribute(objectName, attrname),
+      (attrname, attrval) => setAttribute(objectName, attrname, attrval),
+      (operationName, args) => invoke(objectName, operationName, args)
     )
 
   def domains: List[String] = mbsc.getDomains().toList
