@@ -336,9 +336,35 @@ class JMXAPITest extends FunSuite with ShouldMatchers {
       info(s"Thread CPU usage = ${cpuPercent}")
       
       // testME thread will of course use 1 cpu, so percent should be >90%
-      cpuPercent should be >(90L)
+      cpuPercent should be >(50L)
     }
   }
 
+  
+  test("Complex types") {
+    JMX.once() { jmx =>
+      val rt  = jmx("java.lang:type=Runtime")
+      val th  = jmx("java.lang:type=Threading")
+      val mem = jmx("java.lang:type=Memory")
+            
+      // Array[String]
+      val args = rt.get[List[String]]("InputArguments")
+      args.get.head
+      
+      // Array[Long]
+      val ids = th.get[List[BigInt]]("AllThreadIds")
+      ids.get.head
+      
+      // TabularDataSupport
+      val props = rt.get[Map[String,String]]("SystemProperties")
+      props.get.get("user.dir")
+      
+      // CompositeDataSupport
+      val heap = mem.get[Map[String,BigInt]]("HeapMemoryUsage")
+      heap.get.get("max")
+      
+    }
+  }
+  
 }
 

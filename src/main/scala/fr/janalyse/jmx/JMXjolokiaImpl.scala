@@ -34,8 +34,8 @@ class JMXjolokiaImpl(
       case e: Exception => logger.warn("Exception in additionnal cleaning procesure, let's ignore and continue..." + e.getMessage)
     }
   }
- 
-  def httpPost(requests:JValue):Tuple2[Int, JValue] = {
+
+  def httpPost(requests: JValue): Tuple2[Int, JValue] = {
     val httppost = new HttpPost(baseUrl)
     httppost.setEntity(new StringEntity(compact(render(requests))))
     val response = httpclient.execute(httppost)
@@ -52,36 +52,35 @@ class JMXjolokiaImpl(
 
   // ============================================================================
 
-  
-  def esc(path:String):String = {
-    path.replaceAll("!","!!")
-        .replaceAll("/","!/")
-        
+  def esc(path: String): String = {
+    path.replaceAll("!", "!!")
+      .replaceAll("/", "!/")
+
   }
 
-  def jread(oname: String, attrs: List[String]=List.empty): JValue = {    
+  def jread(oname: String, attrs: List[String] = List.empty): JValue = {
     val (rc, js) = attrs match {
-      case Nil      => httpPost(("type"->"read")~("mbean"->oname))
-      case one::Nil => httpPost(("type"->"read")~("mbean"->oname)~("attribute"->one))
-      case _        => httpPost(("type"->"read")~("mbean"->oname)~("attribute"->attrs))
+      case Nil        => httpPost(("type" -> "read") ~ ("mbean" -> oname))
+      case one :: Nil => httpPost(("type" -> "read") ~ ("mbean" -> oname) ~ ("attribute" -> one))
+      case _          => httpPost(("type" -> "read") ~ ("mbean" -> oname) ~ ("attribute" -> attrs))
     }
     js
   }
-  
+
   implicit val formats = org.json4s.DefaultFormats
-  def jwrite(oname:String, attr:String, value:Any):JValue = {
-    val query = 
-      ("type"->"write")~
-      ("mbean"->oname)~
-      ("attribute"->attr)~
-      ("value"->Extraction.decompose(value))
+  def jwrite(oname: String, attr: String, value: Any): JValue = {
+    val query =
+      ("type" -> "write") ~
+        ("mbean" -> oname) ~
+        ("attribute" -> attr) ~
+        ("value" -> Extraction.decompose(value))
     println(query)
     val (rc, js) = httpPost(query)
     js
   }
 
   def jsearch(query: String): JValue = {
-    val (rc, js) = httpPost(("type"->"search")~("mbean"->query))
+    val (rc, js) = httpPost(("type" -> "search") ~ ("mbean" -> query))
     js
   }
 
@@ -92,11 +91,11 @@ class JMXjolokiaImpl(
     maxObjects: Option[Int] = None) = {
     val path = domain.map(d => esc(d) + keys.map("/" + esc(_)).getOrElse("")).getOrElse("")
     val params = List(
-        maxDepth.map("maxDepth"->JInt(_)),
-        maxObjects.map("maxObjects"->JInt(_))
-        ).flatten
-    val query =("type"->"list")~("path"->path)~params
-    val (rc,js) = httpPost(query)
+      maxDepth.map("maxDepth" -> JInt(_)),
+      maxObjects.map("maxObjects" -> JInt(_))
+    ).flatten
+    val query = ("type" -> "list") ~ ("path" -> path) ~ params
+    val (rc, js) = httpPost(query)
     js
   }
 
@@ -133,55 +132,59 @@ class JMXjolokiaImpl(
     val js = jlist(Some(objectName.getDomain), Some(objectName.getKeyPropertyListString))
     val value = js \ "value"
     try {
-	    value \ "attr" match {
-	      case JObject(attrs) => Some(attrs)
+      value \ "attr" match {
+        case JObject(attrs) =>
+          Some(attrs)
           val attrsInfos = for {
             (name, info) <- attrs
             JObject(entries) <- info
             meta = entries.toMap
           } yield {
             val adesc = meta.get("desc") match {
-              case Some(JString(d)) => d
-              case Some(JNull)|None => ""
-              case x => logger.warn(s"Unsupported desc $x for $objectName field $name"); ""
-            } 
+              case Some(JString(d))   => d
+              case Some(JNull) | None => ""
+              case x                  => logger.warn(s"Unsupported desc $x for $objectName field $name"); ""
+            }
             val atype = meta.get("type") match {
               case Some(JString(t)) => t
-              case x => logger.warn(s"Unsupported type $x for $objectName field $name"); ""
+              case x                => logger.warn(s"Unsupported type $x for $objectName field $name"); ""
             }
             val rw = meta.get("rw") match {
-              case Some(JBool(rw))=>rw
-              case x => logger.warn(s"Unsupported rw $x for $objectName field $name"); false
+              case Some(JBool(rw)) => rw
+              case x               => logger.warn(s"Unsupported rw $x for $objectName field $name"); false
             }
             AttributeMetaData(name, adesc, atype, rw)
           }
           attrsInfos
         case JNothing =>
           List.empty
-	    }
+      }
     } catch {
-      case e:Exception =>
+      case e: Exception =>
         e.printStackTrace
         List.empty
     }
   }
 
-  def getAttribute(objectName: ObjectName, attrname: String) = {
-    val js = jread(objectName.getCanonicalName(), attrname::Nil)
-    val res:Object = (js \ "value") match {
-       case JInt(e)     => e
-       case JDouble(e)  => new java.lang.Double(e)
-       case JDecimal(e) => e
-       case JString(e)  => e
-       case JArray(l) => l
-       case JBool(l) => new java.lang.Boolean(l)
-       case JNothing => null
-       case JNull => null
-       case JObject(o) => o
+  def convert(in: JValue):Object = {
+    in match {
+      case JInt(e)      => e
+      case JDouble(e)   => new java.lang.Double(e)
+      case JDecimal(e)  => e
+      case JString(e)   => e
+      case JArray(list) => list.map(convert)
+      case JBool(l)     => new java.lang.Boolean(l)
+      case JNothing     => null
+      case JNull        => null
+      case JObject(ts)  => ts.map{case (k, value) => k->convert(value)}.toMap
     }
-    Some(res)
   }
 
+  def getAttribute(objectName: ObjectName, attrname: String) = {
+    val js = jread(objectName.getCanonicalName(), attrname :: Nil)
+    val res = convert(js \ "value")
+    Some(res)
+  }
 
   def setAttribute(objectName: ObjectName, attrname: String, attrvalue: Any) {
     jwrite(objectName.getCanonicalName(), attrname, attrvalue)

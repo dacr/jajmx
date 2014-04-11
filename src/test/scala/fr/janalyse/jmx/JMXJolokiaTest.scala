@@ -29,14 +29,14 @@ class JMXJolokiaTest extends FunSuite with ShouldMatchers {
   }
 
   test("Browsing & compare") {
-    def attrsMap(opts: JMXOptions) = {
+    def attrsSet(opts: JMXOptions) = {
       JMX.once(opts) { jmx =>
         for { mbean <- jmx.mbeans; attr <- mbean.attributes }
           yield new ObjectName(mbean.name) -> attr.name
       }.toSet
     }
-    val attrsUsingJsr160 = attrsMap(jmxOpts)
-    val attrsUsingJolokia = attrsMap(jolokiaOpts)
+    val attrsUsingJsr160 = attrsSet(jmxOpts)
+    val attrsUsingJolokia = attrsSet(jolokiaOpts)
 
     val missing = attrsUsingJsr160 -- attrsUsingJolokia
     for { miss <- missing} {
@@ -45,7 +45,44 @@ class JMXJolokiaTest extends FunSuite with ShouldMatchers {
     info(s"Found ${attrsUsingJolokia.size} attributes using jolokia")
     info(s"Found ${attrsUsingJsr160.size} attributes using jsr160")
     attrsUsingJolokia.size should equal(attrsUsingJsr160.size)
-
   }
+
+  
+  
+  test("Numeric attributes") {
+    JMX.once(jolokiaOpts) { jmx =>
+        for (os <- jmx.os) {
+          val numAttrs = os.attributes collect { case x: RichNumberAttribute => x }
+          val numValues = numAttrs map { a => a.name -> os.getDouble(a).get }
+          for{(k,v) <- numValues} info(s"$k=$v")
+          numValues.size should be >(0)
+        }
+      }
+  }
+  
+  test("Complex types") {
+    JMX.once(jolokiaOpts) { jmx =>
+      val rt  = jmx("java.lang:type=Runtime")
+      val th  = jmx("java.lang:type=Threading")
+      val mem = jmx("java.lang:type=Memory")
+            
+      // Array[String]
+      val args = rt.get[List[String]]("InputArguments")
+      args.get.head
+      
+      // Array[Long]
+      val ids = th.get[List[BigInt]]("AllThreadIds")
+      ids.get.head
+      
+      // TabularDataSupport
+      val props = rt.get[Map[String,String]]("SystemProperties")
+      props.get.get("user.dir")
+      
+      // CompositeDataSupport
+      val heap = mem.get[Map[String,BigInt]]("HeapMemoryUsage")
+      heap.get.get("max")
+    }
+  }
+  
 
 }
