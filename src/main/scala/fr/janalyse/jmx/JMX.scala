@@ -52,8 +52,10 @@ trait JMX {
   def close()
   def exists(name: String): Boolean
   def domains: List[String]
+  def names(query:String):List[String]
   def mbeans(query: String): List[RichMBean]
-  def mbeans(): List[RichMBean]
+  def names():List[String]=names("*:*")
+  def mbeans(): List[RichMBean]=mbeans("*:*")
   def apply(name: String): RichMBean
   def get(name: String): Option[RichMBean] = if (exists(name)) Some(apply(name)) else None
 

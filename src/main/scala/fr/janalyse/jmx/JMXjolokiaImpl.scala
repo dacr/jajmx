@@ -11,6 +11,8 @@ import org.json4s._
 import org.json4s.native.JsonMethods._
 import org.json4s.JsonDSL._
 import java.net.URLEncoder
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.StringEntity
 
 class JMXjolokiaImpl(
   getHttpClient: () => CloseableHttpClient,
@@ -32,10 +34,11 @@ class JMXjolokiaImpl(
       case e: Exception => logger.warn("Exception in additionnal cleaning procesure, let's ignore and continue..." + e.getMessage)
     }
   }
-
-  def httpGet(rq: String): Tuple2[Int, JValue] = {
-    val httpget = new HttpGet(baseUrl + rq)
-    val response = httpclient.execute(httpget)
+ 
+  def httpPost(requests:JValue):Tuple2[Int, JValue] = {
+    val httppost = new HttpPost(baseUrl)
+    httppost.setEntity(new StringEntity(compact(render(requests))))
+    val response = httpclient.execute(httppost)
     try {
       val rc = response.getStatusLine().getStatusCode()
       val entity = response.getEntity
@@ -49,38 +52,51 @@ class JMXjolokiaImpl(
 
   // ============================================================================
 
-  def jescape(str: String) = URLEncoder.encode(str, "US-ASCII")
+  
+  def esc(path:String):String = {
+    path.replaceAll("!","!!")
+        .replaceAll("/","!/")
+        
+  }
 
-  def jread(oname: String, attr: Option[String] = None): JValue = {
-    val escapedname = jescape(oname)
-    val (rc, js) = attr match {
-      case None           => httpGet(s"/read/$escapedname")
-      case Some(attrname) => httpGet(s"/read/$escapedname/$attrname")
+  def jread(oname: String, attrs: List[String]=List.empty): JValue = {    
+    val (rc, js) = attrs match {
+      case Nil      => httpPost(("type"->"read")~("mbean"->oname))
+      case one::Nil => httpPost(("type"->"read")~("mbean"->oname)~("attribute"->one))
+      case _        => httpPost(("type"->"read")~("mbean"->oname)~("attribute"->attrs))
     }
+    js
+  }
+  
+  implicit val formats = org.json4s.DefaultFormats
+  def jwrite(oname:String, attr:String, value:Any):JValue = {
+    val query = 
+      ("type"->"write")~
+      ("mbean"->oname)~
+      ("attribute"->attr)~
+      ("value"->Extraction.decompose(value))
+    println(query)
+    val (rc, js) = httpPost(query)
     js
   }
 
   def jsearch(query: String): JValue = {
-    val escapedquery = jescape(query)
-    val (rc, js) = httpGet(s"/search/$escapedquery")
+    val (rc, js) = httpPost(("type"->"search")~("mbean"->query))
     js
   }
 
   def jlist(
     domain: Option[String] = None,
-    path: Option[String] = None,
+    keys: Option[String] = None,
     maxDepth: Option[Int] = None,
     maxObjects: Option[Int] = None) = {
-    val basequery =
-      "/list" + domain.map(d => "/" + jescape(d) + path.map("/" + jescape(_)).getOrElse("")).getOrElse("")
+    val path = domain.map(d => esc(d) + keys.map("/" + esc(_)).getOrElse("")).getOrElse("")
     val params = List(
-      maxDepth.map(s"maxDepth=" + _),
-      maxObjects.map(s"maxObjects=" + _)
-    ).flatten
-    val (rc, js) = params match {
-      case Nil        => httpGet(basequery)
-      case paramslist => httpGet(basequery + "?" + paramslist.mkString("&"))
-    }
+        maxDepth.map("maxDepth"->JInt(_)),
+        maxObjects.map("maxObjects"->JInt(_))
+        ).flatten
+    val query =("type"->"list")~("path"->path)~params
+    val (rc,js) = httpPost(query)
     js
   }
 
@@ -101,24 +117,10 @@ class JMXjolokiaImpl(
     } yield domain
   }
 
-  /*
-  def names():List[String] = {
-    val js = jlist(maxDepth=Some(2))
-    val JObject(ob) = (js \ "value")
-    for { JField(domain, JObject(names)) <- ob
-          (name,_) <- names
-      } yield s"$domain:$name"
-  }
-   */
-
-  def names(): List[String] = names("*:*")
-
   def names(query: String): List[String] = {
     val js = jsearch(query)
     for { JArray(list) <- js \ "value"; JString(name) <- list } yield name
   }
-
-  def mbeans(): List[RichMBean] = names.map(apply)
 
   def mbeans(query: String): List[RichMBean] = names(query).map(apply)
 
@@ -131,18 +133,32 @@ class JMXjolokiaImpl(
     val js = jlist(Some(objectName.getDomain), Some(objectName.getKeyPropertyListString))
     val value = js \ "value"
     try {
-	    val JObject(attrs) = value \ "attr"
-	    val attrsInfos = for {
-	      (name, info) <- attrs
-	      JObject(entries) <- info
-	      meta = entries.toMap
-	      JString(adesc) <- meta.get("desc")
-	      JString(atype) <- meta.get("type")
-	      JBool(rw) <- meta.get("rw")
-	    } yield {
-	      AttributeMetaData(name, adesc, atype, rw)
+	    value \ "attr" match {
+	      case JObject(attrs) => Some(attrs)
+          val attrsInfos = for {
+            (name, info) <- attrs
+            JObject(entries) <- info
+            meta = entries.toMap
+          } yield {
+            val adesc = meta.get("desc") match {
+              case Some(JString(d)) => d
+              case Some(JNull)|None => ""
+              case x => logger.warn(s"Unsupported desc $x for $objectName field $name"); ""
+            } 
+            val atype = meta.get("type") match {
+              case Some(JString(t)) => t
+              case x => logger.warn(s"Unsupported type $x for $objectName field $name"); ""
+            }
+            val rw = meta.get("rw") match {
+              case Some(JBool(rw))=>rw
+              case x => logger.warn(s"Unsupported rw $x for $objectName field $name"); false
+            }
+            AttributeMetaData(name, adesc, atype, rw)
+          }
+          attrsInfos
+        case JNothing =>
+          List.empty
 	    }
-	    attrsInfos
     } catch {
       case e:Exception =>
         e.printStackTrace
@@ -151,7 +167,7 @@ class JMXjolokiaImpl(
   }
 
   def getAttribute(objectName: ObjectName, attrname: String) = {
-    val js = jread(objectName.getCanonicalName(), Some(attrname))
+    val js = jread(objectName.getCanonicalName(), attrname::Nil)
     val res:Object = (js \ "value") match {
        case JInt(e)     => e
        case JDouble(e)  => new java.lang.Double(e)
@@ -166,7 +182,9 @@ class JMXjolokiaImpl(
     Some(res)
   }
 
+
   def setAttribute(objectName: ObjectName, attrname: String, attrvalue: Any) {
+    jwrite(objectName.getCanonicalName(), attrname, attrvalue)
   }
 
   def invoke(objectName: ObjectName, operationName: String, args: Array[Any]): Option[Any] = ???

@@ -39,4 +39,9 @@ unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist
 
 initialCommands in console := """
 import fr.janalyse.jmx._
+import javax.management.ObjectName
+import org.json4s._
+import org.json4s.native.JsonMethods._
+import org.json4s.JsonDSL._
+val jmx=JMX("localhost", 8080).asInstanceOf[JMXjolokiaImpl]
 """

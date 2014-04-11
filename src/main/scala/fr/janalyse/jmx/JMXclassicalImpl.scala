@@ -58,11 +58,12 @@ private class JMXclassicalImpl(
       (attrname, attrval) => setAttribute(objectName, attrname, attrval),
       (operationName, args) => invoke(objectName, operationName, args)
     )
-
   def domains: List[String] = mbsc.getDomains().toList
+  def names(query:String):List[String]=mbsc.queryNames(null, string2objectName(query)).toList.map(_.getCanonicalName())
+  override def names():List[String]=mbsc.queryNames(null, null).toList.map(_.getCanonicalName())  
   def exists(name: String): Boolean = mbsc.queryNames(name, null).size > 0
   def apply(name: String): RichMBean = newMBean(name)
   def mbeans(query: String): List[RichMBean] = mbsc.queryNames(null, string2objectName(query)).toList map { newMBean(_) }
-  def mbeans(): List[RichMBean] = mbsc.queryNames(null, null).toList map { newMBean(_) }
+  override def mbeans(): List[RichMBean] = mbsc.queryNames(null, null).toList map { newMBean(_) }
 }
 
