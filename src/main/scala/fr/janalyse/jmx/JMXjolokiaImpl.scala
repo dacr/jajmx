@@ -168,22 +168,22 @@ class JMXjolokiaImpl(
 
   def convert(in: JValue):Object = {
     in match {
-      case JInt(e)      => e
+      case JInt(e)      => e // BigInt
       case JDouble(e)   => new java.lang.Double(e)
-      case JDecimal(e)  => e
-      case JString(e)   => e
-      case JArray(list) => list.map(convert)
+      case JDecimal(e)  => e // BigDecimal
+      case JString(e)   => e // String
+      case JArray(list) => list.map(convert) // List
       case JBool(l)     => new java.lang.Boolean(l)
       case JNothing     => null
       case JNull        => null
-      case JObject(ts)  => ts.map{case (k, value) => k->convert(value)}.toMap
+      case JObject(ts)  => ts.map{case (k, value) => k->convert(value)}.toMap // Map[String,_]
     }
   }
 
   def getAttribute(objectName: ObjectName, attrname: String) = {
     val js = jread(objectName.getCanonicalName(), attrname :: Nil)
-    val res = convert(js \ "value")
-    Some(res)
+    val res = js \ "value"
+    Option(convert(res))
   }
 
   def setAttribute(objectName: ObjectName, attrname: String, attrvalue: Any) {

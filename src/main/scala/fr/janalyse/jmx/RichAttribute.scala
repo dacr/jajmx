@@ -42,10 +42,6 @@ trait RichNumberAttribute extends RichAttribute {
     case e: java.lang.String => e.toDouble
     case e: BigInt => e.toDouble
     case e: BigDecimal => e.toDouble
-//    case JInt(e)     => e.toDouble
-//    case JDouble(e)  => e.toDouble
-//    case JDecimal(e) => e.toDouble
-//    case JString(e)  => e.toDouble
   }
   def asLong(ob: Object): Long = ob match { // TODO BAD
     case e: java.lang.Byte => e.toLong
@@ -57,10 +53,6 @@ trait RichNumberAttribute extends RichAttribute {
     case e: java.lang.String => e.toLong
     case e: BigInt => e.toLong
     case e: BigDecimal => e.toLong
-//    case JInt(e)     => e.toLong
-//    case JDouble(e)  => e.toLong
-//    case JDecimal(e) => e.toLong
-//    case JString(e)  => e.toLong
   }
   def asInt(ob: Object): Int = ob match { // TODO BAD
     case e: java.lang.Byte => e.toInt
@@ -72,10 +64,6 @@ trait RichNumberAttribute extends RichAttribute {
     case e: java.lang.String => e.toInt
     case e: BigInt => e.toInt
     case e: BigDecimal => e.toInt
-//    case JInt(e)     => e.toInt
-//    case JDouble(e)  => e.toInt
-//    case JDecimal(e) => e.toInt
-//    case JString(e)  => e.toInt
   }
 
 }
@@ -95,10 +83,6 @@ case class RichCompositeDataAttribute(name: String, desc: Option[String] = None)
           case x: java.lang.Float   => Some((name, x))//Some(name -> new runtime.RichDouble(x.toDouble))
           case x: java.lang.Double  => Some((name, x))//Some(name -> new runtime.RichDouble(x.toDouble))
           case x: java.lang.Integer => Some((name, x))//Some(name -> new runtime.RichDouble(x.toDouble))
-/*          case JInt(x)     => Some((name, x))
-          case JDouble(x)  => Some((name, x))
-          case JDecimal(x) => Some((name, x))
-          case JString(x)  => Some((name, x))*/
           case _ => None
         }
     }

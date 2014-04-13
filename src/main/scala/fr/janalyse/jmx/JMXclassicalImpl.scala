@@ -25,7 +25,7 @@ import javax.management.MBeanInfo
 private class JMXclassicalImpl(
   conn: JMXConnector,
   val options: Option[JMXOptions] = None,
-  additionalCleaning: Option[() => Any] = None) extends JMX with Logging with JMXJsr160 {
+  additionalCleaning: Option[() => Any] = None) extends JMXJsr160 {
   private lazy val mbsc: MBeanServerConnection = conn.getMBeanServerConnection
 
   def close() = {
@@ -42,7 +42,13 @@ private class JMXclassicalImpl(
   }
 
   def getMBeanInfo(objectName: ObjectName):MBeanInfo = mbsc.getMBeanInfo(objectName)
-  def getAttribute(objectName: ObjectName, attrname: String) = Option(mbsc.getAttribute(objectName, attrname))
+  
+  def getAttribute(objectName: ObjectName, attrname: String) = {
+    val res = mbsc.getAttribute(objectName, attrname)
+    //Option(convert(res))
+    Option(res)
+  }
+  
   def setAttribute(objectName: ObjectName, attrname: String, attrvalue: Any) {
     val attribute = new javax.management.Attribute(attrname, attrvalue)
     mbsc.setAttribute(objectName, attribute)

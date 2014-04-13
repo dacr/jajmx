@@ -23,7 +23,7 @@ import javax.management.ObjectName
 import scala.collection.JavaConversions._
 
 
-private class JMXrmiImpl(rmiConnection: RMIConnection, val options: Option[JMXOptions] = None) extends JMX with Logging with JMXJsr160 {
+private class JMXrmiImpl(rmiConnection: RMIConnection, val options: Option[JMXOptions] = None) extends JMXJsr160 {
 
   def close() = try {
     rmiConnection.close
@@ -32,7 +32,13 @@ private class JMXrmiImpl(rmiConnection: RMIConnection, val options: Option[JMXOp
   }
   
   def getMBeanInfo(objectName: ObjectName) = rmiConnection.getMBeanInfo(objectName, null)
-  def getAttribute(objectName: ObjectName, attrname: String) = Option(rmiConnection.getAttribute(objectName, attrname, null))
+  
+  def getAttribute(objectName: ObjectName, attrname: String) = {
+    val res = rmiConnection.getAttribute(objectName, attrname, null)
+    //Option(convert(res))
+    Option(res)
+  }
+  
   def setAttribute(objectName: ObjectName, attrname: String, attrvalue: Any) {
     val attribute = new javax.management.Attribute(attrname, attrvalue)
     rmiConnection.setAttribute(objectName, attribute, null)
