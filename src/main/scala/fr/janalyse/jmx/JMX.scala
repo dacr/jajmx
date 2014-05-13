@@ -42,7 +42,7 @@ import javax.management.MBeanServerConnection
 import javax.management.remote.JMXConnectorServer
 import java.rmi.registry.LocateRegistry
 
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 trait JMX {
   val options: Option[JMXOptions]
@@ -219,7 +219,7 @@ trait JMX {
   
 }
 
-object JMX extends Logging {
+object JMX extends LazyLogging {
   def register(ob: Object, obname: ObjectName) = ManagementFactory.getPlatformMBeanServer.registerMBean(ob, obname)
   def unregister(obname: ObjectName) = ManagementFactory.getPlatformMBeanServer.unregisterMBean(obname)
 

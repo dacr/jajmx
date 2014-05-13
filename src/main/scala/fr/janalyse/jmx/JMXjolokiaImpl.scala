@@ -1,6 +1,6 @@
 package fr.janalyse.jmx
 
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import javax.management.ObjectName
 import org.apache.http.client._
 import org.apache.http.client.methods.HttpGet
@@ -18,7 +18,7 @@ class JMXjolokiaImpl(
   getHttpClient: () => CloseableHttpClient,
   val baseUrl: String,
   val options: Option[JMXOptions] = Some(JMXOptions(host = "localhost", port = 8080, contextbase = Some("/jolokia"))),
-  additionalCleaning: Option[() => Any] = None) extends JMX with Logging {
+  additionalCleaning: Option[() => Any] = None) extends JMX with LazyLogging {
 
   val httpclient = getHttpClient()
 

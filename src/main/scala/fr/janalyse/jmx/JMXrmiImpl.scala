@@ -15,7 +15,7 @@
  */
 package fr.janalyse.jmx
 
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 import javax.management.remote.rmi.RMIConnection
 import javax.management.ObjectName
