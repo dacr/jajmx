@@ -407,7 +407,7 @@ object JMX extends LazyLogging {
         case _ => searchMissingClass(e.getCause)
       }
     }
-    try {
+    
       val lr = java.rmi.registry.LocateRegistry.getRegistry(host, port)
       //filterNot => some jonas MBeans causes registry data corruption if lookuped then all others call are in exception
       
@@ -435,6 +435,6 @@ object JMX extends LazyLogging {
         }
       }
       results.flatten
-    }
+    
   }
 }

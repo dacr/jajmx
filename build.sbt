@@ -1,18 +1,19 @@
 name := "janalyse-jmx"
 
-version := "0.7.0-beta"
+version := "0.7.0-beta-2"
 
 organization :="fr.janalyse"
 
 organizationHomepage := Some(new URL("http://www.janalyse.fr"))
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.0"
 
-//crossScalaVersions := Seq("2.10.2")
+crossScalaVersions := Seq("2.10.4", "2.11.0")
 
-libraryDependencies ++= Seq( 
-    "com.typesafe"                  %% "scalalogging-slf4j"  % "1.0.1",
-    "org.json4s"                    %% "json4s-native"       % "3.2.8",
+scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions")
+
+libraryDependencies ++= Seq(
+    "org.json4s"                    %% "json4s-native"       % "3.2.9",
     "org.apache.httpcomponents"      % "httpclient"          % "4.3.3",
     "com.typesafe.scala-logging"    %% "scala-logging-slf4j" % "2.1.2",
     "org.scalatest"                 %% "scalatest"           % "2.1.5" % "test",

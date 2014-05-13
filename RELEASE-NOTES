@@ -13,9 +13,11 @@ TODO : Code cleanup
  - httpclient 4.3.3 dependency added for HTTP client requests
  - jolokia-client-java 1.2.0 dependency added
  - scala 2.10.4
+ - scala 2.11.0 support added
  - scala-logging-slf4j 2.1.2
  - scalatest 2.1.5
-
+ - json4s 3.2.9
+ - and various minor impact changes
 
 ------------------------------------------------------------------
 0.6.4 (2014-03-27)

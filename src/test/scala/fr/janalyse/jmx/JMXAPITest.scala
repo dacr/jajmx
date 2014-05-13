@@ -25,7 +25,7 @@ import java.lang.management.ManagementFactory
 import javax.management.remote.JMXConnectorServerFactory
 import javax.management.remote.JMXConnectorFactory
 import javax.management.remote.JMXServiceURL
-import scala.reflect.BeanProperty
+import scala.beans.BeanProperty
 import javax.management.openmbean.CompositeDataSupport
 import javax.management.openmbean.TabularDataSupport
 import javax.management.openmbean.CompositeData

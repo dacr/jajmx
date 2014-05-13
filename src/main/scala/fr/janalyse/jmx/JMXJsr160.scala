@@ -27,7 +27,7 @@ trait JMXJsr160 extends JMX with LazyLogging {
       //case e:javax.management.openmbean.TabularDataSupport => 
       //  for { (key,data) <- e.content }
        
-      case e => e
+      case e => e.asInstanceOf[Object]
     }
   }
   
