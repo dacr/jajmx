@@ -263,6 +263,7 @@ object JMX extends LazyLogging {
   }
 
   private def jolokiaLookup(opt: JMXOptions) : Option[JMX] = {
+    /*
     import org.apache.http.impl.client._
     import org.apache.http.client.methods.HttpGet
     import org.apache.http.auth._
@@ -306,6 +307,9 @@ object JMX extends LazyLogging {
     } finally {
         httpclient.close()
     }
+    * 
+    */
+    None
   }
   
   private def jmxLookup(opt: JMXOptions): Option[JMX] = {
