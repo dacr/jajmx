@@ -15,8 +15,6 @@
  */
 package fr.janalyse.jmx
 
-import com.typesafe.scalalogging.slf4j.LazyLogging
-
 import javax.management.ObjectName
 import javax.management.MBeanInfo
 import javax.management.MBeanAttributeInfo
@@ -58,7 +56,7 @@ case class RichMBean(
       case e: java.net.ConnectException => throw e
       case e: java.net.SocketException => throw e
       case x: Exception =>
-        logger.error(s"Warning: Error while getting value for attribute ${attr.name} mbean $name", x)
+        logger.error("Warning: Error while getting value for attribute "+attr.name+" mbean "+name, x)
         None
     }
   }

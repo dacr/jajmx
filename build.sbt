@@ -15,7 +15,8 @@ scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:impl
 libraryDependencies ++= Seq(
     "org.json4s"                    %% "json4s-native"       % "3.2.9",
     "org.apache.httpcomponents"      % "httpclient"          % "4.3.3",
-    "com.typesafe.scala-logging"    %% "scala-logging-slf4j" % "2.1.2",
+//    "com.typesafe.scala-logging"    %% "scala-logging-slf4j" % "2.1.2",
+    "org.slf4j"                      % "slf4j-api"           % "1.7.7",
     "org.scalatest"                 %% "scalatest"           % "2.1.5" % "test",
     "junit"                          % "junit"               % "4.10"  % "test"
 )

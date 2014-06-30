@@ -1,6 +1,5 @@
 package fr.janalyse.jmx
 
-import com.typesafe.scalalogging.slf4j.LazyLogging
 import javax.management.ObjectName
 import org.apache.http.client._
 import org.apache.http.client.methods.HttpGet
@@ -143,15 +142,15 @@ class JMXjolokiaImpl(
             val adesc = meta.get("desc") match {
               case Some(JString(d))   => d
               case Some(JNull) | None => ""
-              case x                  => logger.warn(s"Unsupported desc $x for $objectName field $name"); ""
+              case x                  => logger.warn("Unsupported desc "+x+" for "+objectName+" field "+name); ""
             }
             val atype = meta.get("type") match {
               case Some(JString(t)) => t
-              case x                => logger.warn(s"Unsupported type $x for $objectName field $name"); ""
+              case x                => logger.warn("Unsupported type "+x+" for "+objectName+" field "+name); ""
             }
             val rw = meta.get("rw") match {
               case Some(JBool(rw)) => rw
-              case x               => logger.warn(s"Unsupported rw $x for $objectName field $name"); false
+              case x               => logger.warn("Unsupported rw "+x+" for "+objectName+" field "+name); false
             }
             AttributeMetaData(name, adesc, atype, rw)
           }
@@ -190,7 +189,7 @@ class JMXjolokiaImpl(
     jwrite(objectName.getCanonicalName(), attrname, attrvalue)
   }
 
-  def invoke(objectName: ObjectName, operationName: String, args: Array[Any]): Option[Any] = ???
+  def invoke(objectName: ObjectName, operationName: String, args: Array[Any]): Option[Any] = None 
 
   private def newMBean(objectName: ObjectName) =
     RichMBean(

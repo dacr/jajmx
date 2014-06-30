@@ -25,8 +25,6 @@ import javax.management.openmbean.CompositeDataSupport
 import javax.management.openmbean.TabularData
 import javax.management.openmbean.TabularDataSupport
 
-import language.implicitConversions
-
 package object jmx {
 
 

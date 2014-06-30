@@ -3,7 +3,6 @@ package fr.janalyse.jmx
 import javax.management.ObjectName
 import javax.management.MBeanInfo
 import javax.management.MBeanAttributeInfo
-import com.typesafe.scalalogging.slf4j.LazyLogging
 import scala.collection.JavaConversions._
 
 

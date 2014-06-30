@@ -42,8 +42,6 @@ import javax.management.MBeanServerConnection
 import javax.management.remote.JMXConnectorServer
 import java.rmi.registry.LocateRegistry
 
-import com.typesafe.scalalogging.slf4j.LazyLogging
-
 trait JMX {
   val options: Option[JMXOptions]
   // Service name introduced in order to mixup threads dumps, and allow data processing (eg groupBy)
@@ -224,7 +222,6 @@ object JMX extends LazyLogging {
   def unregister(obname: ObjectName) = ManagementFactory.getPlatformMBeanServer.unregisterMBean(obname)
 
   def usingJMX[T <: { def close() }, R](resource: T)(block: T => R) = {
-    import language.reflectiveCalls
     try block(resource)
     finally resource.close
   }
@@ -237,16 +234,18 @@ object JMX extends LazyLogging {
     once[R](JMXOptions(host = host, port = port, username = username, password = password))(block)
   }
 
-  def once[R]()(block: JMX => R): R = once[R](None)(block)
+  def once[R]()(block: JMX => R): R = once[R](someOptions=None)(block)
   def once[R](options: JMXOptions)(block: JMX => R): R = once[R](Some(options))(block)
   def once[R](someOptions: Option[JMXOptions])(block: JMX => R): R = usingJMX(getImpl(someOptions)) { block(_) }
+  def once[R](url: String)(block: JMX => R): R = usingJMX(getImpl(url)) { block(_) }
 
   def apply(options: JMXOptions) = getImpl(Some(options))
   def apply(options: Option[JMXOptions]) = getImpl(options)
   //def apply(host: String, port: Int) = getImpl(Some(JMXOptions(host = host, port = port)))
   def apply(host: String, port: Int, username: Option[String] = None, password: Option[String] = None) = getImpl(Some(JMXOptions(host = host, port = port, username = username, password = password)))
-  def apply() = getImpl()
-
+  def apply() = getImpl(options=None)
+  def apply(serviceurl:String) = getImpl(serviceurl)
+  
   // For jboss "jboss-client.jar" is mandatory
   def jbossServiceURL(host: String, port: Int = 9999) = "service:jmx:remoting-jmx://%s:%d".format(host, port)
   def jonasServiceURL(host: String, port: Int = 1099, name: String = "jonas") = "service:jmx:rmi:///jndi/rmi://%s:%d/jrmpconnector_%s".format(host, port, name)
@@ -260,6 +259,12 @@ object JMX extends LazyLogging {
           throw new RuntimeException("Couldn't find any jmx connector for %s".format(cfg.toString))
         }
     }
+  }
+  
+  private def getImpl(url:String) : JMX = {
+    val serviceURL = new JMXServiceURL(url)
+    val connector = JMXConnectorFactory.connect(serviceURL)
+    new JMXclassicalImpl(connector)
   }
 
   private def jolokiaLookup(opt: JMXOptions) : Option[JMX] = {

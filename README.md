@@ -250,7 +250,7 @@ $JAVA_HOME/jre/lib/management/jmxremote.access
 STANDARD JMX can be used to get JBOSS metrics, but unfortunately JVM metrics can't be gotten
 (Interesting information : http://labs.consol.de/blog/jmx4perl/jboss-remote-jmx/)
 
-- DO NOT ENABLE standard JMX (-Dcom.sun.management.jmxremote*)
+- ENABLE standard JMX (-Dcom.sun.management.jmxremote*) AND USE A DIFFENT PORT than the one use below : 2090
 - JVM 6 required
 - The following module must be deployed : jmx-remoting.sar/
   (if not available, get one in official JBOSS packaging jboss-5.1.0.GA)
@@ -266,6 +266,9 @@ STANDARD JMX can be used to get JBOSS metrics, but unfortunately JVM metrics can
        </mbean>
     </server>
 ```
+- Use the network interface using the option : -Djava.rmi.server.hostname=...
+
+=> We will monitor JBOSS using JMX with 2 ports ! 1090 & 2090, 1090 for jvm mbeans, and 2090 for jboss mbeans
 
 ##For JBOSS `<` 7.x  & `>=` 6
 
