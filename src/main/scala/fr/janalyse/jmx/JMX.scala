@@ -186,8 +186,8 @@ trait JMX {
     val result = for {
       meta <- getAttributesMetaData(objectName)
     } yield {
-      val n = meta.name
-      val d = Option(meta.adesc).map(_.trim).filterNot(_.size == 0).filterNot(_ == n)
+      val n = meta.name.intern()
+      val d = Option(meta.adesc).map(_.trim).filterNot(_.size == 0).filterNot(_ == n).map(_.intern())
       val a: RichAttribute = meta.atype match {
         case "java.lang.Boolean" | "boolean" | "java.lang.boolean" => RichBooleanAttribute(n, d)
         case "java.lang.Byte" | "byte" => RichByteAttribute(n, d)

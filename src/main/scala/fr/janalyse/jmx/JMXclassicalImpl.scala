@@ -20,6 +20,8 @@ import javax.management.ObjectName
 import javax.management.MBeanServerConnection
 import scala.collection.JavaConversions._
 import javax.management.MBeanInfo
+import javax.management.RuntimeMBeanException
+import java.rmi.UnmarshalException
 
 private class JMXclassicalImpl(
   conn: JMXConnector,
@@ -42,10 +44,26 @@ private class JMXclassicalImpl(
 
   def getMBeanInfo(objectName: ObjectName):MBeanInfo = mbsc.getMBeanInfo(objectName)
   
-  def getAttribute(objectName: ObjectName, attrname: String) = {
-    val res = mbsc.getAttribute(objectName, attrname)
-    //Option(convert(res))
-    Option(res)
+  def getAttribute(objectName: ObjectName, attrname: String):Option[Object] = {
+    try {
+	    val res = mbsc.getAttribute(objectName, attrname)
+	    //Option(convert(res))
+	    Option(res)
+    } catch {
+      case e: RuntimeMBeanException /* if e.getCause().isInstanceOf[UnsupportedOperationException] */=> None
+      case e: javax.management.RuntimeOperationsException => None
+      case e: javax.management.ReflectionException => None
+      case e: javax.management.AttributeNotFoundException => None
+      case e: UnmarshalException => None
+      case e: java.rmi.ConnectException => throw e
+      case e: java.net.ConnectException => throw e
+      case e: java.net.SocketException => throw e
+      case e: javax.management.InstanceNotFoundException => throw e
+      case e: java.io.IOException => throw e //None
+      case x: Exception =>
+        logger.warn("Warning: Error while getting value for attribute "+attrname+" mbean "+objectName.getCanonicalName(), x)
+        None
+    }
   }
   
   def setAttribute(objectName: ObjectName, attrname: String, attrvalue: Any) {

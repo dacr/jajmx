@@ -50,13 +50,18 @@ case class RichMBean(
     try {
       attributeGetter(attr.name).map(getter(_))
     } catch {
-      case e: RuntimeMBeanException if e.getCause().isInstanceOf[UnsupportedOperationException] => None
+      case e: RuntimeMBeanException /*if e.getCause().isInstanceOf[UnsupportedOperationException]*/ => None
+      case e: javax.management.RuntimeOperationsException => None
+      case e: javax.management.ReflectionException => None
+      case e: javax.management.AttributeNotFoundException => None
       case e: UnmarshalException => None
       case e: java.rmi.ConnectException => throw e
       case e: java.net.ConnectException => throw e
       case e: java.net.SocketException => throw e
+      case e: javax.management.InstanceNotFoundException => throw e
+      case e: java.io.IOException => throw e //None
       case x: Exception =>
-        logger.error("Warning: Error while getting value for attribute "+attr.name+" mbean "+name, x)
+        logger.warn("Warning: Error while getting value for attribute "+attr.name+" mbean "+name, x)
         None
     }
   }

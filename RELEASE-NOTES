@@ -8,6 +8,12 @@ TODO : Code cleanup
 ------------------------------------------------------------------
 0.7.0 (2014-xx-yy) WORK IN PROGRESS
 
+ - JMX attributes name&desc strings (cf RichAttribute) are now pooled (intern() is used)
+   => decrease heap memory usage
+   But it may required to increase string cache :
+     -XX:StringTableSize=1001113   (default value is : 1009 , 60013 since java 6u40)
+     http://java-performance.info/string-intern-in-java-6-7-8/ 
+      
  - support for jolokia jmx API (HTTP / JSON)
  - json4s-native 3.2.8 dependency added for JSON parsing purposes
  - httpclient 4.3.3 dependency added for HTTP client requests
