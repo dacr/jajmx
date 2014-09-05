@@ -51,10 +51,12 @@ private class JMXclassicalImpl(
 	    Option(res)
     } catch {
       case e: RuntimeMBeanException /* if e.getCause().isInstanceOf[UnsupportedOperationException] */=> None
+      case e: javax.management.MBeanException => None
       case e: javax.management.RuntimeOperationsException => None
       case e: javax.management.ReflectionException => None
       case e: javax.management.AttributeNotFoundException => None
       case e: UnmarshalException => None
+      case e: java.lang.IllegalArgumentException => None
       case e: java.rmi.ConnectException => throw e
       case e: java.net.ConnectException => throw e
       case e: java.net.SocketException => throw e

@@ -1,5 +1,6 @@
 package fr.janalyse.jmx
 
+/*
 import javax.management.ObjectName
 import org.apache.http.client._
 import org.apache.http.client.methods.HttpGet
@@ -200,3 +201,4 @@ class JMXjolokiaImpl(
       (operationName, args) => invoke(objectName, operationName, args))
 
 }
+*/

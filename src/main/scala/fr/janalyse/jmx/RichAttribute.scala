@@ -16,14 +16,14 @@
 package fr.janalyse.jmx
 
 import javax.management.openmbean.{ CompositeData, CompositeDataSupport }
-import org.json4s._
+//import org.json4s._
 
 
 trait RichAttribute {
   val name: String
   val desc: Option[String]
   def asString(ob: Object): String = ob match {
-    case JString(str) => str
+  //  case JString(str) => str
     case x => x.toString() // TODO BAD
   }
 }
