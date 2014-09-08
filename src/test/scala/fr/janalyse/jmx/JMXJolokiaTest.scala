@@ -6,6 +6,7 @@ import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.junit.JUnitRunner
 import javax.management.ObjectName
 
+/*
 @RunWith(classOf[JUnitRunner])
 class JMXJolokiaTest extends FunSuite with ShouldMatchers {
 
@@ -86,3 +87,4 @@ class JMXJolokiaTest extends FunSuite with ShouldMatchers {
   
 
 }
+*/

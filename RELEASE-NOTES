@@ -6,24 +6,29 @@ Crosson David - crosson.david@gmail.com
 TODO : Code cleanup
 
 ------------------------------------------------------------------
-0.7.0 (2014-xx-yy) WORK IN PROGRESS
+0.7.1 (2014-09-10) 
 
  - JMX attributes name&desc strings (cf RichAttribute) are now pooled (intern() is used)
    => decrease heap memory usage
    But it may required to increase string cache :
      -XX:StringTableSize=1001113   (default value is : 1009 , 60013 since java 6u40)
      http://java-performance.info/string-intern-in-java-6-7-8/ 
+ 
+ - better exception handling and arbitaring between errors and no value available
       
- - support for jolokia jmx API (HTTP / JSON)
- - json4s-native 3.2.8 dependency added for JSON parsing purposes
- - httpclient 4.3.3 dependency added for HTTP client requests
- - jolokia-client-java 1.2.0 dependency added
+ - TMP REMOVED : support for jolokia jmx API (HTTP / JSON)
+ - TMP REMOVED : json4s-native 3.2.8 dependency added for JSON parsing purposes
+ - TMP REMOVED : httpclient 4.3.3 dependency added for HTTP client requests
+ - TMP REMOVED : jolokia-client-java 1.2.0 dependency added
+
+ - TMP DESACTIVATED : scala test because of API changes and no support for 2.9, 2.10 and 2.11 within the same release
+
  - scala 2.9.3  support
  - scala 2.10.4 support
  - scala 2.11.0 support
  - slf4j 1.7.7
  - json4s 3.2.9
- - scalatest 2.1.5
+ - scalatest 1.9.2
  - and various minor impact changes
 
 ------------------------------------------------------------------

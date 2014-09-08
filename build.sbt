@@ -1,24 +1,25 @@
 name := "janalyse-jmx"
 
-version := "0.7.0-beta-2"
+version := "0.7.1"
 
 organization :="fr.janalyse"
 
 organizationHomepage := Some(new URL("http://www.janalyse.fr"))
 
-scalaVersion := "2.11.0"
+scalaVersion := "2.11.2"
 
-crossScalaVersions := Seq("2.10.4", "2.11.0")
+crossScalaVersions := Seq("2.9.3", "2.10.4", "2.11.2")
 
-scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions")
+//scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions", "-language:reflectiveCalls")
 
 libraryDependencies ++= Seq(
-    "org.json4s"                    %% "json4s-native"       % "3.2.9",
-    "org.apache.httpcomponents"      % "httpclient"          % "4.3.3",
+//    "org.json4s"                    %% "json4s-native"       % "3.2.9",
+//    "org.apache.httpcomponents"      % "httpclient"          % "4.3.3",
 //    "com.typesafe.scala-logging"    %% "scala-logging-slf4j" % "2.1.2",
     "org.slf4j"                      % "slf4j-api"           % "1.7.7",
-    "org.scalatest"                 %% "scalatest"           % "2.1.5" % "test",
-    "junit"                          % "junit"               % "4.10"  % "test"
+//    "org.scalatest"                 %% "scalatest"           % "2.2.1" % "test",
+//    "org.scalatest"                 %% "scalatest"           % "1.9.2" % "test",
+    "junit"                          % "junit"               % "4.11"  % "test"
 )
 
 resolvers += "JAnalyse Repository requirements" at "http://www.janalyse.fr/repository/"
@@ -33,8 +34,6 @@ publishTo := Some(
 
 //publishArtifact in packageDoc := false
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
-
 // Temporary hack to have scaladoc work fine : check https://github.com/harrah/xsbt/issues/85
 unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist"))
 
@@ -42,8 +41,8 @@ unmanagedClasspath in Compile += Attributed.blank(new java.io.File("doesnotexist
 initialCommands in console := """
 import fr.janalyse.jmx._
 import javax.management.ObjectName
-import org.json4s._
-import org.json4s.native.JsonMethods._
-import org.json4s.JsonDSL._
-val jmx=JMX("localhost", 8080).asInstanceOf[JMXjolokiaImpl]
+//import org.json4s._
+//import org.json4s.native.JsonMethods._
+//import org.json4s.JsonDSL._
+//val jmx=JMX("localhost", 8080).asInstanceOf[JMXjolokiaImpl]
 """

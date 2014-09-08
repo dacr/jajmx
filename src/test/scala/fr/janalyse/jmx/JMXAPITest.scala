@@ -49,6 +49,7 @@ trait JMXSelftInit {
 }
 */
 
+/*
 @RunWith(classOf[JUnitRunner])
 class JMXAPITest extends FunSuite with ShouldMatchers {
 
@@ -367,4 +368,4 @@ class JMXAPITest extends FunSuite with ShouldMatchers {
   }
   
 }
-
+*/
