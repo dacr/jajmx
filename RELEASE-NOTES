@@ -11,6 +11,7 @@ TODO : Code cleanup
 
  - scala releases updates
  - no more support for scala 2.9.3
+ - travis CI support
 
 ------------------------------------------------------------------
 0.7.1 (2014-09-10) 

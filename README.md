@@ -6,10 +6,10 @@ The goal is to simplify jmx operations on remote (or local) JVM. Work on this li
 
 [*Scala docs*](http://www.janalyse.fr/scaladocs/janalyse-jmx) 
 
-*Current release* : 0.6.3 (for scala 2.10) 0.5.0 (for older scala releases) 
+*Current release* : 0.7.2 (for scala 2.10 and 2.11)
 
 *Declare dependency in SBT as follow* :
-```libraryDependencies += "fr.janalyse"   %% "janalyse-jmx" % "0.6.3" % "compile"``
+```libraryDependencies += "fr.janalyse"   %% "janalyse-jmx" % "0.7.2" % "compile"``
 
 *Add JAnalyse repository in SBT as follow* :
 ```resolvers += "JAnalyse Repository" at "http://www.janalyse.fr/repository/"```
