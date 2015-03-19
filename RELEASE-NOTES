@@ -10,6 +10,7 @@ TODO : Code cleanup
 0.7.2 (2015-03-19) 
 
  - scala releases updates
+ - no more support for scala 2.9.3
 
 ------------------------------------------------------------------
 0.7.1 (2014-09-10) 

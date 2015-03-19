@@ -16,10 +16,8 @@
 
 package fr.janalyse.jmx
 
-import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.junit.JUnitRunner
 import java.rmi.registry.LocateRegistry
 import java.lang.management.ManagementFactory
 import javax.management.remote.JMXConnectorServerFactory
@@ -50,7 +48,6 @@ trait JMXSelftInit {
 */
 
 /*
-@RunWith(classOf[JUnitRunner])
 class JMXAPITest extends FunSuite with ShouldMatchers {
 
   def howLongFor[T](what: () => T) = {

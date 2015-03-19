@@ -1,6 +1,6 @@
 name := "janalyse-jmx"
 
-version := "0.7.2-rc1"
+version := "0.7.2"
 
 organization :="fr.janalyse"
 
@@ -8,7 +8,7 @@ organizationHomepage := Some(new URL("http://www.janalyse.fr"))
 
 scalaVersion := "2.11.6"
 
-crossScalaVersions := Seq("2.9.3", "2.10.5", "2.11.6")
+crossScalaVersions := Seq("2.10.5", "2.11.6")
 
 //scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions", "-language:reflectiveCalls")
 
@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
 //    "org.apache.httpcomponents"      % "httpclient"          % "4.3.3",
 //    "com.typesafe.scala-logging"    %% "scala-logging-slf4j" % "2.1.2",
     "org.slf4j"                      % "slf4j-api"           % "1.7.7",
-//    "org.scalatest"                 %% "scalatest"           % "2.2.1" % "test",
+    "org.scalatest"                 %% "scalatest"           % "2.2.1" % "test",
 //    "org.scalatest"                 %% "scalatest"           % "1.9.2" % "test",
     "junit"                          % "junit"               % "4.11"  % "test"
 )
