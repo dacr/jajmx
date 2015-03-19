@@ -1,5 +1,7 @@
 #JAJMX : High level scala JMX API
 
+[![Build Status](https://travis-ci.org/dacr/jajmx.png?branch=master)](https://travis-ci.org/dacr/jajmx)
+
 The goal is to simplify jmx operations on remote (or local) JVM. Work on this library is still in progress... but implemented features work well. One of the main usages of this jmx abstraction layer is to simplify extraction of jmx metrics such as getting jdbc connections or busy threads usage trends. This library only requires one IP and one PORT in order to connect to a remote JMX plateform, no service url is required !
 
 [*JAnalyse software maven repository*](http://www.janalyse.fr/repository/)
