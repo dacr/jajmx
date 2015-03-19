@@ -1,14 +1,14 @@
 name := "janalyse-jmx"
 
-version := "0.7.1"
+version := "0.7.2-rc1"
 
 organization :="fr.janalyse"
 
 organizationHomepage := Some(new URL("http://www.janalyse.fr"))
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.6"
 
-crossScalaVersions := Seq("2.9.3", "2.10.4", "2.11.2")
+crossScalaVersions := Seq("2.9.3", "2.10.5", "2.11.6")
 
 //scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions", "-language:reflectiveCalls")
 
