@@ -1,6 +1,6 @@
 name := "janalyse-jmx"
 
-version := "0.7.3-SNAPSHOT"
+version := "0.7.4-SNAPSHOT"
 
 organization :="fr.janalyse"
 
