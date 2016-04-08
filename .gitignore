@@ -12,3 +12,4 @@ images/
 *.png
 nohup.out
 
+/bin/

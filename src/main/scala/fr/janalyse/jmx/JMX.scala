@@ -247,7 +247,9 @@ object JMX extends LazyLogging {
   def apply(serviceurl:String) = getImpl(serviceurl)
   
   // For jboss "jboss-client.jar" is mandatory
-  def jbossServiceURL(host: String, port: Int = 9999) = "service:jmx:remoting-jmx://%s:%d".format(host, port)
+  def jboss1ServiceURL(host: String, port:Int = 9990) = "service:jmx:remote+http://%s:%d".format(host,port)
+  def jboss2ServiceURL(host: String, port:Int = 9990) = "service:jmx:http-remoting-jmx://%s:%d".format(host,port)
+  def jboss3ServiceURL(host: String, port: Int = 9999) = "service:jmx:remoting-jmx://%s:%d".format(host, port)
   def jonasServiceURL(host: String, port: Int = 1099, name: String = "jonas") = "service:jmx:rmi:///jndi/rmi://%s:%d/jrmpconnector_%s".format(host, port, name)
   def jsr160ServiceURL(host: String, port: Int = 2500) = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi".format(host, port)
 
@@ -328,9 +330,11 @@ object JMX extends LazyLogging {
   private def getMBeanServerFromKnownJMXServiceUrl(opt: JMXOptions): Option[JMX] = {
     opt.url map { u => new JMXclassicalImpl(jmxurl2connector(u, opt.credentials), Some(opt)) } orElse {
       val urls = Stream(
-        jsr160ServiceURL(opt.host, opt.port),
+        jboss1ServiceURL(opt.host, opt.port),
+        jboss2ServiceURL(opt.host, opt.port),
+        jboss3ServiceURL(opt.host, opt.port),
         jonasServiceURL(opt.host, opt.port, opt.name.getOrElse("jonas")),
-        jbossServiceURL(opt.host, opt.port)
+        jsr160ServiceURL(opt.host, opt.port)
       ).map(new JMXServiceURL(_))
       urls.find(jmxurlAlive(_, opt.credentials))
         .map(jmxurl2connector(_, opt.credentials))
