@@ -6,9 +6,9 @@ organization :="fr.janalyse"
 
 organizationHomepage := Some(new URL("http://www.janalyse.fr"))
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
-crossScalaVersions := Seq("2.10.5", "2.11.7")
+crossScalaVersions := Seq("2.10.6", "2.11.8")
 
 //scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions", "-language:reflectiveCalls")
 
@@ -16,8 +16,8 @@ libraryDependencies ++= Seq(
 //    "org.json4s"                    %% "json4s-native"       % "3.2.9",
 //    "org.apache.httpcomponents"      % "httpclient"          % "4.3.3",
 //    "com.typesafe.scala-logging"    %% "scala-logging-slf4j" % "2.1.2",
-    "org.slf4j"                      % "slf4j-api"           % "1.7.12",
-    "org.scalatest"                 %% "scalatest"           % "2.2.+" % "test",
+    "org.slf4j"                      % "slf4j-api"           % "1.7.21",
+    "org.scalatest"                 %% "scalatest"           % "2.2.6" % "test",
     "junit"                          % "junit"               % "4.11"  % "test"
 )
 
