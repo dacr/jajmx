@@ -19,7 +19,7 @@ Latest `version`: [![Maven][mavenImg]][mavenLink] [![Scaladex][scaladexImg]][sca
     `resolvers += "JAnalyse Repository" at "http://www.janalyse.fr/repository/"`
 
 
-##Console mode usage example :
+## Console mode usage example :
 
 ```
  $ java -jar jajmx.jar 
@@ -86,7 +86,7 @@ scala> :q
 
 ```
 
-##gcforce script
+## gcforce script
 
 Only provide to the script, host and port of a remote JVM with JMX enabled, and this script will force the JVM to Garbage Collect major operation.
 
@@ -126,7 +126,7 @@ jajmx.JMX.once() { jmx =>
 ```
 
 
-##lsnum script
+## lsnum script
 
 This scala script search for jmx numerical values. This jmxgrep script can be tested against itself : "lsnum"
 
@@ -154,7 +154,7 @@ JMX.once(options) { jmx =>
 
 ```
 
-##jmxgrep script
+## jmxgrep script
 
 This scala script search matching mbean name, attribute name, or value satisfying the given set of regular exception. This jmxgrep script can be tested against itself : "jmxgrep - vendor version"
 
@@ -197,7 +197,7 @@ JMX.once(options) { jmx =>
 }
 ```
 
-##lsthreads script
+## lsthreads script
 
 Connect to a remote JVM using just the host adress and the used JMX port, and then list all active threads and their current states.
 
@@ -231,9 +231,9 @@ JMX.once(options) { jmx =>
 ```
 
 
-#JMX Configuration Notes
+# JMX Configuration Notes
 
-##Default JSR160 Configuration
+## Default JSR160 Configuration
 
 ```sh
 JAVA_OPTS=$JAVA_OPTS" -Dcom.sun.management.jmxremote"
@@ -250,7 +250,7 @@ $JAVA_HOME/jre/lib/management/jmxremote.password
 $JAVA_HOME/jre/lib/management/jmxremote.access
 ```
 
-##FOR JBOSS 5.1
+## FOR JBOSS 5.1
 
 STANDARD JMX can be used to get JBOSS metrics, but unfortunately JVM metrics can't be gotten
 (Interesting information : http://labs.consol.de/blog/jmx4perl/jboss-remote-jmx/)
@@ -275,7 +275,7 @@ STANDARD JMX can be used to get JBOSS metrics, but unfortunately JVM metrics can
 
 => We will monitor JBOSS using JMX with 2 ports ! 1090 & 2090, 1090 for jvm mbeans, and 2090 for jboss mbeans
 
-##For JBOSS `<` 7.x  & `>=` 6
+## For JBOSS `<` 7.x  & `>=` 6
 
 ```sh
 JAVA_OPTS=$JAVA_OPTS" -Dcom.sun.management.jmxremote"
@@ -289,7 +289,7 @@ JAVA_OPTS=$JAVA_OPTS" -Dcom.sun.management.jmxremote.ssl=false"
 TAKE CARE, to avoid error messages (ignored by processing), add jboss client jars to classpath
 
 
-##For Jetty
+## For Jetty
 Use standard JSR 160 jmxrmi connection, but jetty mbeans must be enabled as by
 adding such block in jetty.xml configuration file, and setting all "StatsOn" to true : 
  
@@ -311,7 +311,7 @@ adding such block in jetty.xml configuration file, and setting all "StatsOn" to 
 works at least for jetty 6.1.x. jetty-management.jar must be added to the classpath if not already present.
 
 
-##For JBOSS 7.x
+## For JBOSS 7.x
 
 jboss-client.jar must be added to the classpath
 
@@ -341,9 +341,9 @@ Added user 'admin' to file '/opt/servers/jboss-as-7.1.1.Final/standalone/configu
 Added user 'admin' to file '/opt/servers/jboss-as-7.1.1.Final/domain/configuration/mgmt-users.properties'
 ```
 
-###Small checks with JBOSS 7
+### Small checks with JBOSS 7
 
-####using jconsole : 
+#### using jconsole : 
 ```
   ./jboss-as-7.1.1.Final/bin/jconsole.sh
      service:jmx:remoting-jmx://10.134.115.167:9999    username = admin  password = ""
@@ -352,7 +352,7 @@ Added user 'admin' to file '/opt/servers/jboss-as-7.1.1.Final/domain/configurati
   jconsole -J-Djava.class.path=/home/dcr/.gentoo/java-config-2/current-user-vm/lib/jconsole.jar:/home/dcr/.gentoo/java-config-2/current-user-vm/lib/tools.jar:/home/dcr/servers/jboss-as-7.1.1.Final/lib/jboss-client.jar
 ```
 
-####using JAJMX : 
+#### using JAJMX : 
 ```
  $ java -classpath ./bin/client/jboss-client.jar:/opt/analysis/analysis.jar com.orange.analysis.Main
  Welcome to Scala version 2.10.0 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_09).
