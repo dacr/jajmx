@@ -11,5 +11,5 @@ target/
 images/
 *.png
 nohup.out
-
+.DS_Store
 /bin/

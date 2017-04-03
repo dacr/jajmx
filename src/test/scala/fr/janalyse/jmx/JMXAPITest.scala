@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 David Crosson
+ * Copyright 2017 David Crosson
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package fr.janalyse.jmx
 
 import org.scalatest.FunSuite
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.Matchers._
 import java.rmi.registry.LocateRegistry
 import java.lang.management.ManagementFactory
 import javax.management.remote.JMXConnectorServerFactory
@@ -47,8 +47,8 @@ trait JMXSelftInit {
 }
 */
 
-/*
-class JMXAPITest extends FunSuite with ShouldMatchers {
+
+class JMXAPITest extends FunSuite {
 
   def howLongFor[T](what: () => T) = {
     val begin = System.currentTimeMillis()
@@ -339,7 +339,7 @@ class JMXAPITest extends FunSuite with ShouldMatchers {
   }
 
   
-  test("Complex types") {
+  ignore("Complex types") {
     JMX.once() { jmx =>
       val rt  = jmx("java.lang:type=Runtime")
       val th  = jmx("java.lang:type=Threading")
@@ -365,4 +365,4 @@ class JMXAPITest extends FunSuite with ShouldMatchers {
   }
   
 }
-*/
+
