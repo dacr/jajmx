@@ -1,7 +1,7 @@
 name := "janalyse-jmx"
 
 organization :="fr.janalyse"
-organizationHomepage := Some(new URL("http://www.janalyse.fr"))
+homepage := Some(new URL("https://github.com/dacr/jajmx"))
 
 scalaVersion := "2.11.8"
 crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
