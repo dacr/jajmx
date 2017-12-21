@@ -1,11 +1,12 @@
 package fr.janalyse.jmx
 
+/*
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
 import org.scalatest.junit.JUnitRunner
 import javax.management.ObjectName
 
-/*
+
 @RunWith(classOf[JUnitRunner])
 class JMXJolokiaTest extends FunSuite with ShouldMatchers {
 

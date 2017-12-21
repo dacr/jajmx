@@ -3,15 +3,17 @@ name := "janalyse-jmx"
 organization :="fr.janalyse"
 homepage := Some(new URL("https://github.com/dacr/jajmx"))
 
-scalaVersion := "2.11.8"
-crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
-
-//scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions", "-language:reflectiveCalls")
+scalaVersion := "2.9.3"
+crossScalaVersions := Seq("2.9.3", "2.10.7", "2.11.12", "2.12.4")
 
 libraryDependencies ++= Seq(
-    "org.slf4j"                      % "slf4j-api"           % "1.7.25",
-    "org.scalatest"                 %% "scalatest"           % "3.0.1" % "test"
+    "org.slf4j"    % "slf4j-api"       % "1.7.25",
+    "junit"        % "junit"           % "4.12" % "test",
+    "com.novocode" % "junit-interface" % "0.11" % "test"
+    //"org.scalatest"                 %% "scalatest"           % "3.0.1" % "test"
 )
+
+testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
 
 initialCommands in console := """
     |import fr.janalyse.jmx._
