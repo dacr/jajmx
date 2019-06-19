@@ -10,7 +10,7 @@ scalaVersion := "2.9.3"
 //scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions", "-language:reflectiveCalls")
 
 libraryDependencies ++= Seq(
-    "org.slf4j"      % "slf4j-api" % "1.7.25",
+    "org.slf4j"      % "slf4j-api" % "1.7.26",
     "org.scalatest" %% "scalatest" % "1.9.2" % "test" 
 )
 
