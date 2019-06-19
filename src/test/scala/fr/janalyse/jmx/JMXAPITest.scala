@@ -17,13 +17,13 @@
 package fr.janalyse.jmx
 
 import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import org.scalatest.matchers.ShouldMatchers._
 import java.rmi.registry.LocateRegistry
 import java.lang.management.ManagementFactory
 import javax.management.remote.JMXConnectorServerFactory
 import javax.management.remote.JMXConnectorFactory
 import javax.management.remote.JMXServiceURL
-import scala.beans.BeanProperty
+import scala.reflect.BeanProperty
 import javax.management.openmbean.CompositeDataSupport
 import javax.management.openmbean.TabularDataSupport
 import javax.management.openmbean.CompositeData
@@ -91,7 +91,7 @@ class JMXAPITest extends FunSuite {
   test("MBean create & use") {
     val marvin = Someone("Marvin", 30)
     try {
-      JMX.register(marvin, s"people:name=${marvin.name}")
+      JMX.register(marvin, "people:name="+marvin.name)
 
       val marvinAgeFromJMX = JMX.once() { jmx =>
         jmx("people:name=Marvin").get[Int]("Age")
@@ -99,17 +99,17 @@ class JMXAPITest extends FunSuite {
       marvinAgeFromJMX should equal(Some(30))
       info("Marvin age is %s".format(marvinAgeFromJMX map { _.toString } getOrElse "Unknown"))
     } finally {
-      JMX.unregister(s"people:name=${marvin.name}")
+      JMX.unregister("people:name="+marvin.name)
     }
   }
 
   test("MBean call tests") {
     val marvin = Someone("Marvin", 30)
     try {
-      JMX.register(marvin, s"people:name=${marvin.name}")
+      JMX.register(marvin, "people:name="+marvin.name)
 
       JMX.once() { jmx =>
-        val jmxmarvin = jmx(s"people:name=${marvin.name}")
+        val jmxmarvin = jmx("people:name="+marvin.name)
         jmxmarvin.call[String]("lowercase", "TOTO") should equal(Some("toto"))
         jmxmarvin.call[Array[String]]("arraylowercase", Array("TOTO", "TATA")).map(_.toList) should equal(Some(List("toto", "tata")))
         jmxmarvin.call[Array[Int]]("addInt", 1, Array(1, 2)).map(_.toList) should equal(Some(List(2, 3)))
@@ -122,7 +122,7 @@ class JMXAPITest extends FunSuite {
         jmxmarvin.call[Array[Char]]("fillChar", 'X', Array('_')).map(_.toList) should equal(Some(List('X')))
       }
     } finally {
-      JMX.unregister(s"people:name=${marvin.name}")
+      JMX.unregister("people:name="+marvin.name)
     }
   }
 
@@ -331,7 +331,7 @@ class JMXAPITest extends FunSuite {
       cputimeInMSopt should be ('defined)
       
       val cpuPercent = cputimeInMSopt.get*100/during
-      info(s"Thread CPU usage = ${cpuPercent}")
+      info("Thread CPU usage = "+cpuPercent)
       
       // testME thread will of course use 1 cpu, so percent should be >90%
       cpuPercent should be >(50L)

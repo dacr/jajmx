@@ -1,16 +1,17 @@
+// USE JAVA 7 TO EXECUTE SBT
+
 name := "janalyse-jmx"
 
 organization :="fr.janalyse"
 homepage := Some(new URL("https://github.com/dacr/jajmx"))
 
-scalaVersion := "2.11.8"
-crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
+scalaVersion := "2.9.3"
 
 //scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions", "-language:reflectiveCalls")
 
 libraryDependencies ++= Seq(
-    "org.slf4j"                      % "slf4j-api"           % "1.7.25",
-    "org.scalatest"                 %% "scalatest"           % "3.0.1" % "test"
+    "org.slf4j"      % "slf4j-api" % "1.7.25",
+    "org.scalatest" %% "scalatest" % "1.9.2" % "test" 
 )
 
 initialCommands in console := """

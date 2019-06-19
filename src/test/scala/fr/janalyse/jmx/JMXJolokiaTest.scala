@@ -1,7 +1,7 @@
 package fr.janalyse.jmx
 
 import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import org.scalatest.matchers.ShouldMatchers._
 import org.scalatest.junit.JUnitRunner
 import javax.management.ObjectName
 
