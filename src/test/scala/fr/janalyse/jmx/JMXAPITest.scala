@@ -139,7 +139,7 @@ class JMXAPITest extends FunSuite {
 
       val runtime = jmx("java.lang:type=Runtime")
       val vmname: String = runtime("VmName")
-      vmname should include("Java")
+      vmname should (include("Java") or include("OpenJDK"))
       info("JVM NAME : %s".format(vmname))
 
       val threading = jmx("java.lang:type=Threading")
