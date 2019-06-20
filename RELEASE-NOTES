@@ -3,7 +3,11 @@ JAJMX (JANALYSE-JMX) - JMX SCALA API
 Crosson David - crosson.david@gmail.com
 ------------------------------------------------------------------
 
-TODO : Code cleanup
+------------------------------------------------------------------
+0.8.3 2019-06-20
+
+ - modernize for all scala releases and use git branches to manage each set of scala release,
+   master will be kept for the latest release of the language
 
 ------------------------------------------------------------------
 0.7.4-SNAPSHOT (2016-04-08)
