@@ -6,18 +6,19 @@ homepage := Some(new URL("https://github.com/dacr/jajmx"))
 scalaVersion := "2.13.0"
 
 libraryDependencies ++= Seq(
-    "org.slf4j"                      % "slf4j-api"           % "1.7.25",
-    "org.scalatest"                 %% "scalatest"           % "3.0.8" % "test"
+  "org.slf4j"                      % "slf4j-api"           % "1.7.25",
+  "org.scalatest"                 %% "scalatest"           % "3.0.8" % "test"
 )
 
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
 
-initialCommands in console := """
-    |import fr.janalyse.jmx._
-    |import javax.management.ObjectName
-    |""".stripMargin
+initialCommands in console :=
+"""
+  |import fr.janalyse.jmx._
+  |import javax.management.ObjectName
+  |""".stripMargin
 
-    
+
 /*
 pomIncludeRepository := { _ => false }
 
