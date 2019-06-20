@@ -32,7 +32,7 @@ pomIncludeRepository := { _ => false }
 useGpg := true
 
 licenses += "Apache 2" -> url(s"http://www.apache.org/licenses/LICENSE-2.0.txt")
-releaseCrossBuild := true
+releaseCrossBuild := false
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
 publishMavenStyle := true
 publishArtifact in Test := false
