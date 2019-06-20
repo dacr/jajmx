@@ -13,3 +13,5 @@ images/
 nohup.out
 .DS_Store
 /bin/
+.idea
+
