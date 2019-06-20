@@ -39,6 +39,8 @@ publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opt
 
 scmInfo := Some(ScmInfo(url(s"https://github.com/dacr/jajmx"), s"git@github.com:dacr/jajmx.git"))
 
+PgpKeys.useGpg in Global := true
+
 pomExtra in Global := {
   <developers>
     <developer>
