@@ -25,7 +25,7 @@ initialCommands in console :=
   |""".stripMargin
 
 
-/*
+
 pomIncludeRepository := { _ => false }
 
 useGpg := true
@@ -66,4 +66,3 @@ releaseProcess := Seq[ReleaseStep](
     pushChanges
   )
  
-*/
