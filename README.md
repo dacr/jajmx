@@ -6,17 +6,10 @@ The goal is to simplify jmx operations on remote (or local) JVM. Work on this li
 
 In your build.sbt, add this (available in maven central) :
 ```
-libraryDependencies += "fr.janalyse"   %% "janalyse-ssh" % version
+libraryDependencies += "fr.janalyse"   %% "janalyse-jmx" % version
 ```
-_(starting from 0.10, java 8 bytecodes are used, and scala 2.10, 2.11 and 2.12 are supported)_
 
 Latest `version`: [![Maven][mavenImg]][mavenLink] [![Scaladex][scaladexImg]][scaladexLink]
-
-
-*Old release* :
-* 0.7.2 (for scala 2.10 and 2.11)
-  + requires this resolver :  
-    `resolvers += "JAnalyse Repository" at "http://www.janalyse.fr/repository/"`
 
 
 ## Console mode usage example :
