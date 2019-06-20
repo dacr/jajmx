@@ -5,6 +5,12 @@ homepage := Some(new URL("https://github.com/dacr/jajmx"))
 
 scalaVersion := "2.13.0"
 
+// 2.9.3   : generates java 5 bytecodes, even with run with a JVM6
+// 2.10.7  : generates java 6 bytecodes
+// 2.11.12 : generates java 6 bytecodes
+// 2.12.8  : generates java 8 bytecodes && JVM8 required for compilation
+// 2.13.0  : generates java 8 bytecodes && JVM8 required for compilation
+
 libraryDependencies ++= Seq(
   "org.slf4j"                      % "slf4j-api"           % "1.7.25",
   "org.scalatest"                 %% "scalatest"           % "3.0.8" % "test"
