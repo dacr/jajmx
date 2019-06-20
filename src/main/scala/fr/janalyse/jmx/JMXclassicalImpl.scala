@@ -18,7 +18,7 @@ package fr.janalyse.jmx
 import javax.management.remote.JMXConnector
 import javax.management.ObjectName
 import javax.management.MBeanServerConnection
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import javax.management.MBeanInfo
 import javax.management.RuntimeMBeanException
 import java.rmi.UnmarshalException
@@ -84,11 +84,11 @@ private class JMXclassicalImpl(
       (operationName, args) => invoke(objectName, operationName, args)
     )
   def domains: List[String] = mbsc.getDomains().toList
-  def names(query:String):List[String]=mbsc.queryNames(null, string2objectName(query)).toList.map(_.getCanonicalName())
-  override def names():List[String]=mbsc.queryNames(null, null).toList.map(_.getCanonicalName())  
+  def names(query:String):List[String]=mbsc.queryNames(null, string2objectName(query)).asScala.toList.map(_.getCanonicalName())
+  override def names():List[String]=mbsc.queryNames(null, null).asScala.toList.map(_.getCanonicalName())
   def exists(name: String): Boolean = mbsc.queryNames(name, null).size > 0
   def apply(name: String): RichMBean = newMBean(name)
-  def mbeans(query: String): List[RichMBean] = mbsc.queryNames(null, string2objectName(query)).toList map { newMBean(_) }
-  override def mbeans(): List[RichMBean] = mbsc.queryNames(null, null).toList map { newMBean(_) }
+  def mbeans(query: String): List[RichMBean] = mbsc.queryNames(null, string2objectName(query)).asScala.toList map { newMBean(_) }
+  override def mbeans(): List[RichMBean] = mbsc.queryNames(null, null).asScala.toList map { newMBean(_) }
 }
 

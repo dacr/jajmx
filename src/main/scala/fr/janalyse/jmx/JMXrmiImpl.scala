@@ -18,7 +18,7 @@ package fr.janalyse.jmx
 import javax.management.remote.rmi.RMIConnection
 import javax.management.ObjectName
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 
 private class JMXrmiImpl(rmiConnection: RMIConnection, val options: Option[JMXOptions] = None) extends JMXJsr160 {
@@ -54,11 +54,11 @@ private class JMXrmiImpl(rmiConnection: RMIConnection, val options: Option[JMXOp
     )
 
   def domains: List[String] = rmiConnection.getDomains(null).toList
-  def names(query:String):List[String]=rmiConnection.queryNames(null, string2objectName(query),null).toList.map(_.getCanonicalName())
-  override def names():List[String]=rmiConnection.queryNames(null, null,null).toList.map(_.getCanonicalName())  
+  def names(query:String):List[String]=rmiConnection.queryNames(null, string2objectName(query),null).asScala.toList.map(_.getCanonicalName())
+  override def names():List[String]=rmiConnection.queryNames(null, null,null).asScala.toList.map(_.getCanonicalName())
   def exists(name: String): Boolean = rmiConnection.queryNames(name, null, null).size > 0
   def apply(name: String): RichMBean = newMBean(name)
-  def mbeans(query: String): List[RichMBean] = rmiConnection.queryNames(null, string2objectName(query), null).toList map { newMBean(_) }
-  override def mbeans(): List[RichMBean] = rmiConnection.queryNames(null, null, null).toList map { newMBean(_) }
+  def mbeans(query: String): List[RichMBean] = rmiConnection.queryNames(null, string2objectName(query), null).asScala.toList map { newMBean(_) }
+  override def mbeans(): List[RichMBean] = rmiConnection.queryNames(null, null, null).asScala.toList map { newMBean(_) }
 }
 

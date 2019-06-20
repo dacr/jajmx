@@ -15,7 +15,7 @@
  */
 package fr.janalyse.jmx
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 import javax.management.openmbean.TabularDataSupport
 import javax.management.openmbean.TabularData
@@ -24,7 +24,7 @@ import javax.management.openmbean.CompositeData
 
 case class CompositeDataWrapper[CDT <: CompositeData](cd: CDT) {
   lazy val content: Map[String, Object] = {
-    val keys = cd.getCompositeType().keySet()
+    val keys = cd.getCompositeType().keySet().asScala
     val tuples = keys.toList map { k => (k -> cd.get(k)) }
     tuples.toMap
   }
@@ -52,17 +52,17 @@ case class CompositeDataWrapper[CDT <: CompositeData](cd: CDT) {
 case class TabularDataWrapper[TD <: TabularData](tabularData: TD) {
   lazy val content: Map[String, Map[String, Object]] = {
     val indexNamesInCell = tabularData.getTabularType().getIndexNames()
-    val tuples = tabularData.values collect {
+    val tuples = tabularData.values.asScala collect {
       case v: CompositeDataSupport =>
         val cellContent = v.content
-        val key = indexNamesInCell map { cellContent.get(_).get } mkString ("-")
+        val key = indexNamesInCell.asScala map { cellContent.get(_).get } mkString ("-")
         val submap = cellContent filterNot { case (k, _) => indexNamesInCell contains k }
 
         key -> submap
 
       case (k /*: java.util.List[String]*/ , v: CompositeData) =>
         val cellContent = v.content
-        val key = indexNamesInCell map { cellContent.get(_).get } mkString ("-")
+        val key = indexNamesInCell.asScala map { cellContent.get(_).get } mkString ("-")
         val submap = cellContent filterNot { case (k, _) => indexNamesInCell contains k }
 
         key -> submap

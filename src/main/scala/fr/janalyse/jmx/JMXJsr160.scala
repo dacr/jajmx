@@ -3,7 +3,6 @@ package fr.janalyse.jmx
 import javax.management.ObjectName
 import javax.management.MBeanInfo
 import javax.management.MBeanAttributeInfo
-import scala.collection.JavaConversions._
 
 
 trait JMXJsr160 extends JMX with LazyLogging {

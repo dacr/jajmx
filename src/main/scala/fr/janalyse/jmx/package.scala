@@ -15,7 +15,7 @@
  */
 package fr.janalyse
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 import javax.management.ObjectName
 import javax.management.ObjectInstance
