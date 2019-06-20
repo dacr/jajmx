@@ -146,7 +146,7 @@ class JMXAPITest extends TestCase {
 
       val runtime = jmx("java.lang:type=Runtime")
       val vmname: String = runtime("VmName")
-      assertTrue(vmname.contains("Java"))
+      assertTrue(vmname.contains("Java") || vmname.contains("OpenJDK"))
       info("JVM NAME : %s".format(vmname))
 
       val threading = jmx("java.lang:type=Threading")
