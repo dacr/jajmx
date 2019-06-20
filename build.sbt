@@ -4,7 +4,12 @@ organization :="fr.janalyse"
 homepage := Some(new URL("https://github.com/dacr/jajmx"))
 
 scalaVersion := "2.9.3"
-crossScalaVersions := Seq("2.9.3", "2.10.7", "2.11.12", "2.12.4")
+crossScalaVersions := Seq(
+  "2.9.3",   // generate java 5 bytecodes, even with run with a JVM6
+  "2.10.7",  // generate java 6 bytecodes
+  "2.11.12", // generate java 6 bytecodes
+  "2.12.4"   // generate java 8 bytecodes && JVM8 required for compilation
+)
 
 libraryDependencies ++= Seq(
     "org.slf4j"    % "slf4j-api"       % "1.7.25",
@@ -13,7 +18,7 @@ libraryDependencies ++= Seq(
     //"org.scalatest"                 %% "scalatest"           % "3.0.1" % "test"
 )
 
-testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
+//testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
 
 initialCommands in console := """
     |import fr.janalyse.jmx._
@@ -58,7 +63,7 @@ releaseProcess := Seq[ReleaseStep](
     publishArtifacts,
     setNextVersion,
     commitNextVersion,
-    releaseStepCommand("sonatypeReleaseAll"),
-    pushChanges
+    releaseStepCommand("sonatypeReleaseAll")
+    //pushChanges
   )
  

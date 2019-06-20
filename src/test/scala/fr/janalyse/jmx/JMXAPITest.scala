@@ -68,6 +68,7 @@ class JMXAPITest extends TestCase {
   // -- Define Some MBean Interface 
   trait SomeoneMBean {
     def getAge(): Int
+    def getSlowName(): String
     def lowercase(input: String): String
     def arraylowercase(input: Array[String]): Array[String]
     def addInt(toadd: Int, addTo: Array[Int]): Array[Int]
@@ -82,6 +83,10 @@ class JMXAPITest extends TestCase {
   // -- Our JMX Managed class 
   case class Someone(name: String, /*@BeanProperty */age: Int) extends SomeoneMBean {
     def getAge():Int=age
+    def getSlowName():String = {
+      Thread.sleep(5*1000L)
+      name
+    }
     def lowercase(input: String) = input.toLowerCase()
     def arraylowercase(input: Array[String]) = input.map(_.toLowerCase())
     def addInt(toadd: Int, addTo: Array[Int]) = addTo.map(_ + toadd)
@@ -101,10 +106,28 @@ class JMXAPITest extends TestCase {
       JMX.register(marvin, "people:name="+marvin.name)
 
       val marvinAgeFromJMX = JMX.once() { jmx =>
-        jmx("people:name=Marvin").get[Int]("Age")
+        jmx("people:name="+marvin.name).get[Int]("Age")
       }
       assertEquals(marvinAgeFromJMX, Some(30))
       info("Marvin age is %s".format(marvinAgeFromJMX map { _.toString } getOrElse "Unknown"))
+    } finally {
+      JMX.unregister("people:name="+marvin.name)
+    }
+  }
+
+  def testMBeanGetTimeout:Unit =  {
+    val marvin = Someone("Marvin", 30)
+    try {
+      JMX.register(marvin, "people:name="+marvin.name)
+
+      val (duration, marvinNameFromJMX) = howLongFor { () =>
+        JMX.once() { jmx =>
+          jmx.setTimeout(2000)
+          jmx("people:name="+marvin.name).get[String]("SlowName")
+        }
+      }
+      assertTrue(duration < 2000)
+      assertEquals(marvinNameFromJMX, None)
     } finally {
       JMX.unregister("people:name="+marvin.name)
     }
