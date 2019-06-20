@@ -3,14 +3,11 @@ name := "janalyse-jmx"
 organization :="fr.janalyse"
 homepage := Some(new URL("https://github.com/dacr/jajmx"))
 
-scalaVersion := "2.11.8"
-crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.1")
-
-//scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions", "-language:reflectiveCalls")
+scalaVersion := "2.13.0"
 
 libraryDependencies ++= Seq(
     "org.slf4j"                      % "slf4j-api"           % "1.7.25",
-    "org.scalatest"                 %% "scalatest"           % "3.0.1" % "test"
+    "org.scalatest"                 %% "scalatest"           % "3.0.8" % "test"
 )
 
 initialCommands in console := """
@@ -19,7 +16,7 @@ initialCommands in console := """
     |""".stripMargin
 
     
-
+/*
 pomIncludeRepository := { _ => false }
 
 useGpg := true
@@ -60,3 +57,4 @@ releaseProcess := Seq[ReleaseStep](
     pushChanges
   )
  
+*/

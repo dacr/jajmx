@@ -1,4 +1,4 @@
-
+/*
 resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
 
 addSbtPlugin("com.eed3si9n"       %   "sbt-unidoc"              % "0.3.2")
@@ -10,3 +10,4 @@ addSbtPlugin("com.typesafe.sbt"   %   "sbt-ghpages"             % "0.5.4")
 addSbtPlugin("com.updateimpact"   %   "updateimpact-sbt-plugin" % "2.1.1")
 addSbtPlugin("org.xerial.sbt"     %   "sbt-sonatype"            % "0.5.1")
 addSbtPlugin("com.codacy"         %   "sbt-codacy-coverage"     % "1.3.8")
+*/

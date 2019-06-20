@@ -21,7 +21,7 @@ import javax.management.MBeanAttributeInfo
 import javax.management.RuntimeMBeanException
 import java.rmi.UnmarshalException
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 
 case class RichMBean(

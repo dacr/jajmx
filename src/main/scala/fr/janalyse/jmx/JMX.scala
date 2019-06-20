@@ -25,7 +25,7 @@ import javax.management.openmbean.{ TabularData, TabularDataSupport }
 import java.rmi.MarshalledObject
 import java.rmi.UnmarshalException
 import javax.management.openmbean.CompositeData
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import javax.management.remote.JMXConnector
 import javax.management.remote.JMXServiceURL
 import javax.management.remote.{ JMXConnectorServerFactory, JMXConnectorFactory }
