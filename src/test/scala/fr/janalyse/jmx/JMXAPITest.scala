@@ -16,14 +16,16 @@
 
 package fr.janalyse.jmx
 
-import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import org.junit.Test
+import junit.framework.TestCase
+import org.junit.Assert._
+
 import java.rmi.registry.LocateRegistry
 import java.lang.management.ManagementFactory
 import javax.management.remote.JMXConnectorServerFactory
 import javax.management.remote.JMXConnectorFactory
 import javax.management.remote.JMXServiceURL
-import scala.beans.BeanProperty
+//import scala.beans.BeanProperty
 import javax.management.openmbean.CompositeDataSupport
 import javax.management.openmbean.TabularDataSupport
 import javax.management.openmbean.CompositeData
@@ -48,7 +50,11 @@ trait JMXSelftInit {
 */
 
 
-class JMXAPITest extends FunSuite {
+class JMXAPITest extends TestCase {
+
+  def info(msg:String):Unit = {
+    println(msg)
+  }
 
   def howLongFor[T](what: () => T) = {
     val begin = System.currentTimeMillis()
@@ -74,7 +80,8 @@ class JMXAPITest extends FunSuite {
     def fillChar(fillWith: Char, that: Array[Char]): Array[Char]
   }
   // -- Our JMX Managed class 
-  case class Someone(name: String, @BeanProperty age: Int) extends SomeoneMBean {
+  case class Someone(name: String, /*@BeanProperty */age: Int) extends SomeoneMBean {
+    def getAge():Int=age
     def lowercase(input: String) = input.toLowerCase()
     def arraylowercase(input: Array[String]) = input.map(_.toLowerCase())
     def addInt(toadd: Int, addTo: Array[Int]) = addTo.map(_ + toadd)
@@ -88,58 +95,58 @@ class JMXAPITest extends FunSuite {
   }
 
   // -- The test case : Creates a JMX managed instance, and queries it
-  test("MBean create & use") {
+  def testMBeanCreateAndUse:Unit =  {
     val marvin = Someone("Marvin", 30)
     try {
-      JMX.register(marvin, s"people:name=${marvin.name}")
+      JMX.register(marvin, "people:name="+marvin.name)
 
       val marvinAgeFromJMX = JMX.once() { jmx =>
         jmx("people:name=Marvin").get[Int]("Age")
       }
-      marvinAgeFromJMX should equal(Some(30))
+      assertEquals(marvinAgeFromJMX, Some(30))
       info("Marvin age is %s".format(marvinAgeFromJMX map { _.toString } getOrElse "Unknown"))
     } finally {
-      JMX.unregister(s"people:name=${marvin.name}")
+      JMX.unregister("people:name="+marvin.name)
     }
   }
 
-  test("MBean call tests") {
+  def testMBeanCall:Unit =  {
     val marvin = Someone("Marvin", 30)
     try {
-      JMX.register(marvin, s"people:name=${marvin.name}")
+      JMX.register(marvin, "people:name="+marvin.name)
 
       JMX.once() { jmx =>
-        val jmxmarvin = jmx(s"people:name=${marvin.name}")
-        jmxmarvin.call[String]("lowercase", "TOTO") should equal(Some("toto"))
-        jmxmarvin.call[Array[String]]("arraylowercase", Array("TOTO", "TATA")).map(_.toList) should equal(Some(List("toto", "tata")))
-        jmxmarvin.call[Array[Int]]("addInt", 1, Array(1, 2)).map(_.toList) should equal(Some(List(2, 3)))
+        val jmxmarvin = jmx("people:name="+marvin.name)
+        assertEquals(jmxmarvin.call[String]("lowercase", "TOTO"), Some("toto"))
+        assertEquals(jmxmarvin.call[Array[String]]("arraylowercase", Array("TOTO", "TATA")).map(_.toList) , Some(List("toto", "tata")))
+        assertEquals(jmxmarvin.call[Array[Int]]("addInt", 1, Array(1, 2)).map(_.toList), Some(List(2, 3)))
         //jmxmarvin.call[Array[Short]]("addShort", 1.toShort, Array(1.toShort, 2.toShort)).map(_.toList) should equal(Some(List(2.toShort, 3.toShort)))
-        jmxmarvin.call[Array[Long]]("addLong", 1L, Array(1L, 2L)).map(_.toList) should equal(Some(List(2L, 3L)))
-        jmxmarvin.call[Array[Float]]("addFloat", 1f, Array(1f, 2f)).map(_.toList) should equal(Some(List(2f, 3f)))
-        jmxmarvin.call[Array[Double]]("addDouble", 1d, Array(1d, 2d)).map(_.toList) should equal(Some(List(2d, 3d)))
-        jmxmarvin.call[Array[Boolean]]("fillBoolean", true, Array(false)).map(_.toList) should equal(Some(List(true)))
-        jmxmarvin.call[Array[Byte]]("fillByte", 255.toByte, Array(0.toByte)).map(_.toList) should equal(Some(List(255.toByte)))
-        jmxmarvin.call[Array[Char]]("fillChar", 'X', Array('_')).map(_.toList) should equal(Some(List('X')))
+        assertEquals(jmxmarvin.call[Array[Long]]("addLong", 1L, Array(1L, 2L)).map(_.toList), Some(List(2L, 3L)))
+        assertEquals(jmxmarvin.call[Array[Float]]("addFloat", 1f, Array(1f, 2f)).map(_.toList), Some(List(2f, 3f)))
+        assertEquals(jmxmarvin.call[Array[Double]]("addDouble", 1d, Array(1d, 2d)).map(_.toList), Some(List(2d, 3d)))
+        assertEquals(jmxmarvin.call[Array[Boolean]]("fillBoolean", true, Array(false)).map(_.toList), Some(List(true)))
+        assertEquals(jmxmarvin.call[Array[Byte]]("fillByte", 255.toByte, Array(0.toByte)).map(_.toList), Some(List(255.toByte)))
+        assertEquals(jmxmarvin.call[Array[Char]]("fillChar", 'X', Array('_')).map(_.toList), Some(List('X')))
       }
     } finally {
-      JMX.unregister(s"people:name=${marvin.name}")
+      JMX.unregister("people:name="+marvin.name)
     }
   }
 
   // ================================================================================================
 
-  test("Simple JMX test") {
+  def testSimpleJMX:Unit = {
     JMX.once() { jmx =>
       val os = jmx("java.lang:type=OperatingSystem")
       val List(name, version) = os[String]("Name", "Version")
 
-      name.size should be > (0)
-      version.size should be > (0)
+      assertTrue(name.size > 0)
+      assertTrue(version.size > 0)
       info("OS Name & Version : %s %s".format(name, version))
 
       val runtime = jmx("java.lang:type=Runtime")
       val vmname: String = runtime("VmName")
-      vmname should include("Java")
+      assertTrue(vmname.contains("Java"))
       info("JVM NAME : %s".format(vmname))
 
       val threading = jmx("java.lang:type=Threading")
@@ -154,7 +161,7 @@ class JMXAPITest extends FunSuite {
   }
 
   // ================================================================================================
-  test("short and safe usage") {
+  def testShortAndSafeUsage:Unit =  {
     JMX.once() { jmx =>
       val osname1 = jmx.get("java.lang:type=OperatingSystem") flatMap { _.getString("Name") }
       //or
@@ -162,21 +169,21 @@ class JMXAPITest extends FunSuite {
     }
   }
   // ================================================================================================
-  test("one line jmx browsing") {
+  def testOneLineJmxBrowsing:Unit =  {
     val results =
       for (mb <- JMX().mbeans; attr <- mb.attributes; value <- mb.getString(attr)) yield attr.name -> value
 
-    results.size should be > (0)
+    assertTrue(results.size > 0)
   }
   // ================================================================================================
-  test("jmx mbeans query") {
+  def testJmxMbeansQuery:Unit =  {
     JMX.once() { jmx =>
-      jmx.mbeans("java.lang:type=GarbageCollector,*").size should be > (0)
-      jmx.mbeans("Catalina:type=ThreadPool,*").size should equal(0)
+      assertTrue(jmx.mbeans("java.lang:type=GarbageCollector,*").size > 0)
+      assertTrue(jmx.mbeans("Catalina:type=ThreadPool,*").size == 0)
     }
   }
   // ================================================================================================
-  test("get numeric attributes") {
+  def testGetNumericAttributes:Unit = {
     JMX.once() { jmx =>
       for (os <- jmx.os) {
         val numAttrs = os.attributes collect { case x: RichNumberAttribute => x }
@@ -185,16 +192,16 @@ class JMXAPITest extends FunSuite {
     }
   }
   // ================================================================================================
-  test("jmx shorcuts") {
+  def testJmxShorcuts:Unit = {
     JMX.once() { jmx =>
-      jmx.os should not equal (None)
-      jmx.runtime should not equal (None)
-      jmx.memory should not equal (None)
-      jmx.threading should not equal (None)
+      assertNotEquals(jmx.os, None)
+      assertNotEquals(jmx.runtime, None)
+      assertNotEquals(jmx.memory, None)
+      assertNotEquals(jmx.threading, None)
     }
   }
   // ================================================================================================
-  test("jmx open data conversions") {
+  def testJmxOpenDataConversions:Unit = {
     JMX.once() { jmx =>
 
       // ----- CompositeData support
@@ -202,7 +209,7 @@ class JMXAPITest extends FunSuite {
         val heapusage = mem[CompositeDataSupport]("HeapMemoryUsage").toWrapper
         val used = heapusage.getNumber("used")
         info("current heap usage : %d Mo".format(used.get.longValue / 1024 / 1024))
-        used should not equal (None)
+        assertNotEquals(used, None)
       }
 
       // ----- CompositeData support
@@ -210,7 +217,7 @@ class JMXAPITest extends FunSuite {
         val heapusage = mem.getNumberComposite("HeapMemoryUsage").get
         val used = heapusage.get("used")
         info("current heap usage : %d Mo".format(used.get.longValue / 1024 / 1024))
-        used should not equal (None)
+        assertNotEquals(used, None)
       }
 
       // ----- Browsing system properties
@@ -227,10 +234,10 @@ class JMXAPITest extends FunSuite {
       for (rt <- jmx.runtime) {
         val sysprops = rt[TabularDataSupport]("SystemProperties").toWrapper
         val jv = sysprops.get("java.version")
-        jv should not equal (None)
-        jv.get("value") should equal(util.Properties.javaVersion)
-        sysprops.get("java.version", "value") should equal(Some(util.Properties.javaVersion))
-        sysprops.getString("java.version", "value") should equal(Some(util.Properties.javaVersion))
+        assertNotEquals(jv, None)
+        assertEquals(jv.get("value"), util.Properties.javaVersion)
+        assertEquals(sysprops.get("java.version", "value"), Some(util.Properties.javaVersion))
+        assertEquals(sysprops.getString("java.version", "value"), Some(util.Properties.javaVersion))
       }
 
       // ----- CompositeData array support
@@ -238,11 +245,11 @@ class JMXAPITest extends FunSuite {
       val diagOpts = hotspotDiag.get[Array[CompositeData]]("DiagnosticOptions")
       val diagProps = (diagOpts map { cd => cd.get("name") -> cd.get("value") }).toMap
 
-      diagProps should contain key ("PrintGC")
+      assertTrue(diagProps.contains("PrintGC"))
     }
   }
   // ================================================================================================
-  test("Simple composite data retrieve") {
+  def testSimpleCompositeDataRetrieve:Unit =  {
     JMX.once() { jmx =>
       for (
         mem <- jmx.memory;
@@ -255,7 +262,7 @@ class JMXAPITest extends FunSuite {
   }
   // ================================================================================================
 
-  test("More complex nested composite data values") {
+  def testMoreComplexNestedCompositeDataValues:Unit =  {
     import java.lang.management.MemoryUsage
     JMX.once() { jmx =>
       for (
@@ -269,8 +276,8 @@ class JMXAPITest extends FunSuite {
         val aftergc = lastgc.get[Map[String, MemoryUsage]]("memoryUsageAfterGc")
         val beforegc = lastgc.get[Map[String, MemoryUsage]]("memoryUsageBeforeGc")
 
-        aftergc.isDefined should equal(true)
-        beforegc.isDefined should equal(true)
+        assertTrue(aftergc.isDefined)
+        assertTrue(beforegc.isDefined)
 
       }
     }
@@ -278,7 +285,7 @@ class JMXAPITest extends FunSuite {
 
   // ================================================================================================
 
-  test("Thread dumps & CPU times test") {
+  def testThreadDumpsAndCPUTimesTest:Unit =  {
     JMX.once() { jmx =>
       val th2testName = "testME"
       val during = 5 * 1000L
@@ -303,17 +310,17 @@ class JMXAPITest extends FunSuite {
       Thread.sleep(during)
       val dump2opt = jmx.threadsDump(5, true)
       
-      dump1opt should be ('defined)
-      dump2opt should be ('defined)
+      assertTrue(dump1opt.isDefined)
+      assertTrue(dump2opt.isDefined)
       
       val th1opt = dump1opt.flatMap(_.threads.find(_.name == th2testName))
-      th1opt should be ('defined)
+      assertTrue(th1opt.isDefined)
       
       val th2opt = dump2opt.flatMap(_.threads.find(_.name == th2testName))
-      th2opt should be ('defined)
+      assertTrue(th2opt.isDefined)
       
-      th1opt.get.stack.map(_.methodName) should contain("computeLoop")
-      th2opt.get.stack.map(_.methodName) should contain("computeLoop")
+      assertTrue(th1opt.get.stack.map(_.methodName).contains("computeLoop"))
+      assertTrue(th2opt.get.stack.map(_.methodName).contains("computeLoop"))
       
       val cputimeInMSopt = for {
         dump1 <- dump1opt
@@ -328,18 +335,19 @@ class JMXAPITest extends FunSuite {
         (cputimes2 - cputimes1)/1000/1000 // Now in milliseconds instead of nanoseconds
       }
 
-      cputimeInMSopt should be ('defined)
+      assertTrue(cputimeInMSopt.isDefined)
       
       val cpuPercent = cputimeInMSopt.get*100/during
-      info(s"Thread CPU usage = ${cpuPercent}")
+      info("Thread CPU usage = "+cpuPercent)
       
       // testME thread will of course use 1 cpu, so percent should be >90%
-      cpuPercent should be >(50L)
+
+      assertTrue(cpuPercent > 50L)
     }
   }
 
-  
-  ignore("Complex types") {
+
+  def ignored_testComplexTypes:Unit =  {
     JMX.once() { jmx =>
       val rt  = jmx("java.lang:type=Runtime")
       val th  = jmx("java.lang:type=Threading")
@@ -360,7 +368,6 @@ class JMXAPITest extends FunSuite {
       // CompositeDataSupport
       val heap = mem.get[Map[String,BigInt]]("HeapMemoryUsage")
       heap.get.get("max")
-      
     }
   }
   

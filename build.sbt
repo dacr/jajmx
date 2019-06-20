@@ -10,6 +10,8 @@ libraryDependencies ++= Seq(
     "org.scalatest"                 %% "scalatest"           % "3.0.8" % "test"
 )
 
+testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
+
 initialCommands in console := """
     |import fr.janalyse.jmx._
     |import javax.management.ObjectName
