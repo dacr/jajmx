@@ -16,8 +16,8 @@
 
 package fr.janalyse.jmx
 
-import org.scalatest.FunSuite
-import org.scalatest.Matchers._
+import org.scalatest.funsuite._
+import org.scalatest.matchers._
 import java.rmi.registry.LocateRegistry
 import java.lang.management.ManagementFactory
 import javax.management.remote.JMXConnectorServerFactory
@@ -48,7 +48,7 @@ trait JMXSelftInit {
 */
 
 
-class JMXAPITest extends FunSuite {
+class JMXAPITest extends AnyFunSuite with should.Matchers {
 
   def howLongFor[T](what: () => T) = {
     val begin = System.currentTimeMillis()

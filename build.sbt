@@ -1,22 +1,30 @@
 name := "janalyse-jmx"
-
 organization :="fr.janalyse"
 homepage := Some(new URL("https://github.com/dacr/jajmx"))
+licenses += "Apache 2" -> url(s"http://www.apache.org/licenses/LICENSE-2.0.txt")
+scmInfo := Some(ScmInfo(url(s"https://github.com/dacr/jajmx"), s"git@github.com:dacr/jajmx.git"))
 
-scalaVersion := "2.13.0"
+scalaVersion := "2.13.1"
+scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-language:implicitConversions", "-language:reflectiveCalls")
 
-// 2.9.3   : generates java 5 bytecodes, even with run with a JVM6
+crossScalaVersions := Seq("2.12.11", "2.13.1")
 // 2.10.7  : generates java 6 bytecodes
 // 2.11.12 : generates java 6 bytecodes
 // 2.12.8  : generates java 8 bytecodes && JVM8 required for compilation
 // 2.13.0  : generates java 8 bytecodes && JVM8 required for compilation
 
 libraryDependencies ++= Seq(
-  "org.slf4j"                      % "slf4j-api"           % "1.7.26",
-  "org.scalatest"                 %% "scalatest"           % "3.0.8" % "test"
+  "org.slf4j"                      % "slf4j-api"           % "1.7.30",
+  "org.scalatest"                 %% "scalatest"           % "3.1.1" % "test"
 )
 
-testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v")
+testOptions in Test += {
+  val rel = scalaVersion.value.split("[.]").take(2).mkString(".")
+  Tests.Argument(
+    "-oDF", // -oW to remove colors
+    "-u", s"target/junitresults/scala-$rel/"
+  )
+}
 
 initialCommands in console :=
 """
@@ -24,48 +32,3 @@ initialCommands in console :=
   |import javax.management.ObjectName
   |""".stripMargin
 
-
-
-pomIncludeRepository := { _ => false }
-
-useGpg := true
-
-licenses += "Apache 2" -> url(s"http://www.apache.org/licenses/LICENSE-2.0.txt")
-releaseCrossBuild := true
-releasePublishArtifactsAction := PgpKeys.publishSigned.value
-publishMavenStyle := true
-publishArtifact in Test := false
-publishTo := Some(if (isSnapshot.value) Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging)
-
-scmInfo := Some(ScmInfo(url(s"https://github.com/dacr/jajmx"), s"git@github.com:dacr/jajmx.git"))
-
-PgpKeys.useGpg in Global := true      // workaround with pgp and sbt 1.2.x
-pgpSecretRing := pgpPublicRing.value  // workaround with pgp and sbt 1.2.x
-
-pomExtra in Global := {
-  <developers>
-    <developer>
-      <id>dacr</id>
-      <name>David Crosson</name>
-      <url>https://github.com/dacr</url>
-    </developer>
-  </developers>
-}
-
-
-import ReleaseTransformations._
-releaseProcess := Seq[ReleaseStep](
-    checkSnapshotDependencies,
-    inquireVersions,
-    //runClean,
-    runTest,
-    setReleaseVersion,
-    commitReleaseVersion,
-    tagRelease,
-    publishArtifacts,
-    setNextVersion,
-    commitNextVersion,
-    releaseStepCommand("sonatypeReleaseAll"),
-    pushChanges
-  )
- 

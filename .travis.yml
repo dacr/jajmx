@@ -1,7 +1,12 @@
 language: scala
 
 scala:
-  - 2.13.0
+  - 2.12.11
+  - 2.13.1
+
+branches:
+  only:
+    - master
 
 jdk:
   - openjdk8

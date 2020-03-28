@@ -1,4 +1,4 @@
-# JAJMX - High level scala JMX API [![Build Status][travisImg]][travisLink] [![License][licenseImg]][licenseLink] [![Codacy][codacyImg]][codacyLink] [![codecov][codecovImg]][codecovLink]
+# JAJMX - High level scala JMX API [![Build Status][travisImg]][travisLink] [![License][licenseImg]][licenseLink] [![Maven][mavenImg]][mavenLink] [![Scaladex][scaladexImg]][scaladexLink] [![Codacy][codacyImg]][codacyLink] [![codecov][codecovImg]][codecovLink]
 
 The goal is to simplify jmx operations on remote (or local) JVM. Work on this library is still in progress... but implemented features work well. One of the main usages of this jmx abstraction layer is to simplify extraction of jmx metrics such as getting jdbc connections or busy threads usage trends. This library only requires one IP and one PORT in order to connect to a remote JMX plateform, no service url is required !
 
@@ -8,9 +8,6 @@ In your build.sbt, add this (available in maven central) :
 ```
 libraryDependencies += "fr.janalyse"   %% "janalyse-jmx" % version
 ```
-
-Latest `version`: [![Maven][mavenImg]][mavenLink] [![Scaladex][scaladexImg]][scaladexLink]
-
 
 ## Console mode usage example :
 
@@ -361,24 +358,19 @@ Added user 'admin' to file '/opt/servers/jboss-as-7.1.1.Final/domain/configurati
 
 
 [mavenImg]: https://img.shields.io/maven-central/v/fr.janalyse/janalyse-jmx_2.12.svg
-[mavenImg2]: https://maven-badges.herokuapp.com/maven-central/fr.janalyse/janalyse-jmx_2.12/badge.svg
 [mavenLink]: https://search.maven.org/#search%7Cga%7C1%7Cfr.janalyse.janalyse-jmx
 
 [scaladexImg]: https://index.scala-lang.org/dacr/jajmx/janalyse-jmx/latest.svg
 [scaladexLink]: https://index.scala-lang.org/dacr/jajmx
 
 [licenseImg]: https://img.shields.io/github/license/dacr/jajmx.svg
-[licenseImg2]: https://img.shields.io/:license-apache2-blue.svg
 [licenseLink]: LICENSE
 
 [codacyImg]: https://img.shields.io/codacy/ebf47b1789cd4ab4abea8a2df09f5d11.svg
-[codacyImg2]: https://api.codacy.com/project/badge/grade/ebf47b1789cd4ab4abea8a2df09f5d11
 [codacyLink]: https://www.codacy.com/app/dacr/jajmx/dashboard
 
 [codecovImg]: https://img.shields.io/codecov/c/github/dacr/jajmx/master.svg
-[codecovImg2]: https://codecov.io/github/dacr/jajmx/coverage.svg?branch=master
 [codecovLink]: http://codecov.io/github/dacr/jajmx?branch=master
 
 [travisImg]: https://img.shields.io/travis/dacr/jajmx.svg
-[travisImg2]: https://travis-ci.org/dacr/jajmx.png?branch=master
 [travisLink]:https://travis-ci.org/dacr/jajmx
