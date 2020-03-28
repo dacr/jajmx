@@ -357,7 +357,7 @@ Added user 'admin' to file '/opt/servers/jboss-as-7.1.1.Final/domain/configurati
 ```
 
 
-[mavenImg]: https://img.shields.io/maven-central/v/fr.janalyse/janalyse-jmx_2.12.svg
+[mavenImg]: https://img.shields.io/maven-central/v/fr.janalyse/janalyse-jmx_2.13.svg
 [mavenLink]: https://search.maven.org/#search%7Cga%7C1%7Cfr.janalyse.janalyse-jmx
 
 [scaladexImg]: https://index.scala-lang.org/dacr/jajmx/janalyse-jmx/latest.svg
